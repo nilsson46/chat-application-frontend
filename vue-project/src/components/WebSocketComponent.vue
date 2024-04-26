@@ -1,56 +1,61 @@
-<script>
-export default {
-  data() {
-    return {
-      socket: null,
-      connected: false,
-      messageToSend: '',
-      receivedMessage: ''
-    };
-  },
-  methods: {
-    connectToWebSocket() {
-      this.socket = new WebSocket('ws://localhost:8080/ws');
-      this.socket.onopen = () => {
-        console.log('WebSocket-anslutning öppnad');
-        this.connected = true;
-        this.sendMessage(); // Skicka meddelandet när anslutningen är öppen
-        this.socket.onmessage = this.receiveMessage;
-      };
-      this.socket.onerror = (error) => {
-        console.error('WebSocket Error:', error);
+<template>
+    <div>
+      <input type="text" v-model="message" placeholder="Enter your message">
+      <button @click="sendMessage">Send</button>
+      <ul>
+        <li v-for="msg in messages" :key="msg.id">{{ msg.content }}</li>
+      </ul>
+    </div>
+  </template>
+  
+  <script>
+  //import {Client} from '@stomp/stompjs'
+  export default {
+    data() {
+      return {
+        message: '',
+        messages: [],
+        socket: null
       };
     },
-    receiveMessage(event) {
-      this.receivedMessage = event.data;
+    mounted() {
+      this.connectWebSocket();
     },
-    sendMessage() {
-      if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-        const message = {
-          type: 'CHAT',
-          content: 'Hello, World!',
-          sender: 'username'
+    methods: {
+      connectWebSocket() {
+        // Establish WebSocket connection
+        this.socket = new WebSocket(`http://localhost:8080/connect`,'echo-protocol');
+  
+        // WebSocket event handlers
+        this.socket.onopen = () => {
+          console.log('Connected to WebSocket');
         };
-        this.socket.send(JSON.stringify(message));
-      } else {
-        console.error('WebSocket-anslutning inte öppen.');
+  
+        this.socket.onmessage = (event) => {
+          // Handle incoming WebSocket messages
+          console.log('Received message:', event.data);
+          this.messages.push({ id: this.messages.length, content: event.data });
+        };
+  
+        this.socket.onerror = (error) => {
+          console.error('WebSocket error:', error);
+        };
+  
+        this.socket.onclose = () => {
+          console.log('WebSocket connection closed');
+        };
+      },
+      sendMessage() {
+        // Send message through WebSocket
+        this.socket.send(this.message);
+        console.log('Message sent:', this.message);
+        this.message = ''; // Clear input field after sending message
       }
     }
-  }
-};
-</script>
-
-<template>
-  <div>
-    <button @click="connectToWebSocket">Anslut till WebSocket</button>
-    <div v-if="connected">
-      <input type="text" v-model="messageToSend" placeholder="Skriv ett meddelande">
-      <button @click="sendMessage">Skicka</button>
-      <div v-if="receivedMessage">{{ receivedMessage }}</div>
-    </div>
-  </div>
-</template>
-
-<style scoped>
-/* Stilmall för komponenten */
-</style>
+  };
+  </script>
+  
+  <style scoped>
+  /* Add your component-specific styles here if needed */
+  </style>
+  
