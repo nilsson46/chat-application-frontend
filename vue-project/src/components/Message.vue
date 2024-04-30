@@ -24,46 +24,52 @@
       };
     },
     methods: {
-      connectWebSocket() {
-        // Skapa en WebSocket-anslutning
-        this.socket = new SockJS(`${this.socketUrl}/connect`);
-        this.client = new Client({ webSocketFactory: () => this.socket });
-  
-        // Lyssna på händelsen när WebSocket-anslutningen upprättas
-        this.client.onConnect = () => {
-          console.log('Connected to WebSocket server');
-          this.connected = true;
-        };
-  
-        // Lyssna på händelsen när WebSocket-anslutningen avbryts
-        this.client.onDisconnect = () => {
-          console.log('Disconnected from WebSocket server');
-          this.connected = false;
-        };
-  
-        // Aktivera WebSocket-anslutningen
-        this.client.activate();
-      },
+        connectWebSocket() {
+  // Skapa en WebSocket-anslutning
+  this.socket = new SockJS(`${this.socketUrl}/connect`);
+  this.client = new Client({ webSocketFactory: () => this.socket });
+
+  // Lyssna på händelsen när WebSocket-anslutningen upprättas
+  this.client.onConnect = () => {
+    console.log('Connected to WebSocket server');
+    this.connected = true;
+
+    // Lägg till en lyssnare för att ta emot meddelanden
+    this.client.subscribe('/topic/public', (message) => {
+      if (message.body) {
+        let receivedMessage = JSON.parse(message.body);
+        console.log('Received message:', receivedMessage);
+      }
+    });
+  };
+
+  // Lyssna på händelsen när WebSocket-anslutningen avbryts
+  this.client.onDisconnect = () => {
+    console.log('Disconnected from WebSocket server');
+    this.connected = false;
+  };
+
+  // Aktivera WebSocket-anslutningen
+  this.client.activate();
+},
       sendMessage() {
-        // Kontrollera om meddelandet är tomt
-        if (this.messageToSend.trim() === '') {
-          console.error('Skriv ett meddelande innan du skickar');
-          return;
-        }
-  
         // Kontrollera om användaren är ansluten till WebSocket-servern
         if (!this.connected) {
-          console.error('Du är inte ansluten till WebSocket-servern');
-          return;
+            console.error('Du är inte ansluten till WebSocket-servern');
+            return;
         }
-  
+
+        // Skapa ett meddelandeobjekt som matchar strukturen för ChatMessage-klassen i backend
+        const message = {
+            content: 'Detta är ett testmeddelande',
+            sender: 'Användarnamn',
+            type: 'CHAT'
+        };
+
         // Skicka meddelandet till WebSocket-servern
-        this.client.publish({ destination: '/chat/sendMessage', body: JSON.stringify({ sender: 'Me', content: this.messageToSend }) });
-        console.log('Sent message:', { sender: 'Me', content: this.messageToSend });
-  
-        // Rensa inputfältet
-        this.messageToSend = '';
-      }
+        this.client.publish({ destination: '/ws/chat/sendMessage', body: JSON.stringify(message) });
+        console.log('Sent message:', message);
+        }
     }
   };
   </script>
