@@ -16,6 +16,7 @@ import EasySocket from './components/EasySocket.vue'
       <nav>
         <RouterLink to="/">Home</RouterLink>
         <RouterLink to="/about">About</RouterLink>
+        <RouterLink to="/message">Message</RouterLink>
       </nav>
     </div>
   </header>
