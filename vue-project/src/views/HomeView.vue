@@ -1,9 +1,18 @@
 <script setup>
-import TheWelcome from '../components/TheWelcome.vue'
+import NavBar from '@/components/NavBar.vue'
 </script>
 
 <template>
-  <main>
-    <TheWelcome />
+  <main class="navbar">
+    <NavBar />
   </main>
 </template>
+
+<style>
+.navbar {
+  display: flex;
+  justify-content:flex-start;
+  align-items: center;
+  height: 100vh;
+}
+</style>

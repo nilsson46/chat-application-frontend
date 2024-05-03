@@ -1,11 +1,11 @@
 <template>
-    <div>
+    <div class="navigation">
       <!-- Anslutningsknapp -->
-      <button @click="connectWebSocket" :disabled="connected">Anslut till WebSocket</button>
+      <button class="button" @click="connectWebSocket" :disabled="connected">Anslut till WebSocket</button>
   
       <!-- Inputfält för att skriva meddelanden -->
       <input v-model="messageToSend" type="text" placeholder="Skriv ditt meddelande här">
-      <button @click="sendMessage" :disabled="!connected">Skicka</button>
+      <button class="button" @click="sendMessage" :disabled="!connected">Skicka</button>
     </div>
   </template>
   
@@ -24,47 +24,70 @@
       };
     },
     methods: {
-      connectWebSocket() {
-        // Skapa en WebSocket-anslutning
-        this.socket = new SockJS(`${this.socketUrl}/connect`);
-        this.client = new Client({ webSocketFactory: () => this.socket });
-  
-        // Lyssna på händelsen när WebSocket-anslutningen upprättas
-        this.client.onConnect = () => {
-          console.log('Connected to WebSocket server');
-          this.connected = true;
-        };
-  
-        // Lyssna på händelsen när WebSocket-anslutningen avbryts
-        this.client.onDisconnect = () => {
-          console.log('Disconnected from WebSocket server');
-          this.connected = false;
-        };
-  
-        // Aktivera WebSocket-anslutningen
-        this.client.activate();
-      },
+        connectWebSocket() {
+  // Skapa en WebSocket-anslutning
+  this.socket = new SockJS(`${this.socketUrl}/connect`);
+  this.client = new Client({ webSocketFactory: () => this.socket });
+
+  // Lyssna på händelsen när WebSocket-anslutningen upprättas
+  this.client.onConnect = () => {
+    console.log('Connected to WebSocket server');
+    this.connected = true;
+
+    // Lägg till en lyssnare för att ta emot meddelanden
+    this.client.subscribe('/topic/public', (message) => {
+      if (message.body) {
+        let receivedMessage = JSON.parse(message.body);
+        console.log('Received message:', receivedMessage);
+      }
+    });
+  };
+
+  // Lyssna på händelsen när WebSocket-anslutningen avbryts
+  this.client.onDisconnect = () => {
+    console.log('Disconnected from WebSocket server');
+    this.connected = false;
+  };
+
+  // Aktivera WebSocket-anslutningen
+  this.client.activate();
+},
       sendMessage() {
-        // Kontrollera om meddelandet är tomt
-        if (this.messageToSend.trim() === '') {
-          console.error('Skriv ett meddelande innan du skickar');
-          return;
-        }
-  
         // Kontrollera om användaren är ansluten till WebSocket-servern
         if (!this.connected) {
-          console.error('Du är inte ansluten till WebSocket-servern');
-          return;
+            console.error('Du är inte ansluten till WebSocket-servern');
+            return;
         }
-  
+
+        // Skapa ett meddelandeobjekt som matchar strukturen för ChatMessage-klassen i backend
+        const message = {
+            content: 'Detta är ett testmeddelande',
+            sender: 'Användarnamn',
+            type: 'CHAT'
+        };
+
         // Skicka meddelandet till WebSocket-servern
-        this.client.publish({ destination: '/chat/sendMessage', body: JSON.stringify({ sender: 'Me', content: this.messageToSend }) });
-        console.log('Sent message:', { sender: 'Me', content: this.messageToSend });
-  
-        // Rensa inputfältet
-        this.messageToSend = '';
-      }
+        this.client.publish({ destination: '/ws/chat/sendMessage', body: JSON.stringify(message) });
+        console.log('Sent message:', message);
+        }
     }
   };
   </script>
+
+<style scoped>
+div .navigation{
+    display: flex;
+    justify-content: space-around;
+    font-size: x-large;
+    font-family: 'Courier New', Courier, monospace;
+    background-color: blue;
+    padding: 1rem;
+}
+button{
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  margin-right: 1rem;
+  margin-left: 1rem;
+}
+</style>
   
