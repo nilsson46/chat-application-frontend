@@ -1,12 +1,11 @@
 <script setup>
-import EasySocket from '../components/EasySocket.vue'
+import NavBar from '../components/NavBar.vue'
 import Message from '../components/Message.vue'
 </script>
 
 <template>
     <div class="about">
-      <h1>This is an about page</h1>
-      <EasySocket/>
+        <NavBar/>
       <Message />
     </div>
 </template>
