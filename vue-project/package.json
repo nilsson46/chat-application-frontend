@@ -10,7 +10,9 @@
   },
   "dependencies": {
     "@stomp/stompjs": "^7.0.0",
+    "axios": "^1.6.8",
     "sockjs-client": "^1.6.1",
+    "vee-validate": "^4.12.6",
     "vue": "^3.4.21",
     "vue-router": "^4.3.0",
     "webstomp-client": "^1.2.6"
