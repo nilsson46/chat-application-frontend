@@ -16,6 +16,7 @@
 </template>
 <script>
 import axios from 'axios';
+
 export default {
     data() {
         return {
@@ -30,11 +31,14 @@ export default {
                 password: this.password
             })
             .then(response => {
-                // Handle the response from the server
+                // Store the JWT token in local storage
+                localStorage.setItem('token', response.data.token);
                 console.log(response.data);
+                console.log(response.data.token);
+                // Redirect the user to a different page
+                this.$router.push('/landing');
             })
             .catch(error => {
-                // Handle any errors that occur during the request
                 console.error(error);
             });
         }
