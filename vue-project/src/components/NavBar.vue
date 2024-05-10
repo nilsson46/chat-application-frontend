@@ -4,7 +4,7 @@
 <template>
     <div>
         <a class="button">Home</a>
-        <a class="button">Login</a>
+        <a class="button" href="http://localhost:5173/login">Login</a>
         <a class="button" href="http://localhost:5173/register">Register</a>
         <a class="button" href="http://localhost:5173/message">Message</a>
         <a class="button">SOmething</a>

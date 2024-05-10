@@ -1,11 +1,11 @@
 <script setup>
 import NavBar from '../components/NavBar.vue'
-import Register from '../components/Register.vue'
+import Login from '../components/LoginComponent.vue'
 </script>
 
 <template>
     <div class="about">
         <NavBar/>
-      <Re />
+      <Login />
     </div>
 </template>
