@@ -4,8 +4,8 @@
       <button class="button" @click="connectWebSocket" :disabled="connected">Anslut till WebSocket</button>
   
       <!-- Inputfält för att skriva meddelanden -->
-      <input v-model="messageToSend" type="text" placeholder="Skriv ditt meddelande här">
-      <button class="button" @click="sendMessage">Skicka</button>
+      <input v-model="messageContent" type="text" placeholder="Skriv ditt meddelande här">
+      <button class="button" @click="sendMessage(messageContent)">Skicka</button>
     </div>
 </template>
   
@@ -15,7 +15,7 @@ import { mapState, mapActions } from 'vuex';
 export default {
     data() {
       return {
-        messageToSend: ''
+        messageContent: ''
       };
     },
     computed: {

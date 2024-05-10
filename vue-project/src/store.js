@@ -16,6 +16,9 @@ export default new Vuex.Store({
     SET_SOCKET(state, socket) {
       state.socket = socket;
     },
+    SET_USERNAME(state, username) {
+        state.username = username;
+    },
     SET_CLIENT(state, client) {
       state.client = client;
     },
@@ -24,12 +27,16 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    setUsername({ commit }, username) {
+        commit('SET_USERNAME', username);
+      },
     connectWebSocket({ commit, state }) {
       const socket = new SockJS(`${state.socketUrl}/connect`);
       commit('SET_SOCKET', socket);
 
       const client = new Client({ webSocketFactory: () => state.socket });
       commit('SET_CLIENT', client);
+      
 
       client.onConnect = () => {
         console.log('Connected to WebSocket server');
@@ -50,20 +57,20 @@ export default new Vuex.Store({
 
       client.activate();
     },
-    sendMessage({ state }) {
-      if (!state.connected) {
-        console.error('Du är inte ansluten till WebSocket-servern');
-        return;
-      }
-
-      const message = {
-        content: 'Detta är ett testmeddelande',
-        sender: 'Användarnamn',
-        type: 'CHAT'
-      };
-
-      state.client.publish({ destination: '/ws/chat/sendMessage', body: JSON.stringify(message) });
-      console.log('Sent message:', message);
+    sendMessage({ state }, messageContent) {
+        if (!state.connected) {
+            console.error('You are not connected to the WebSocket server');
+            return;
+        }
+    
+        const message = {
+            content: messageContent,
+            sender: state.username,
+            type: 'CHAT'
+        };
+    
+        state.client.publish({ destination: '/ws/chat/sendMessage', body: JSON.stringify(message) });
+        console.log('Sent message:', message);
     },
-  },
+    },
 });
