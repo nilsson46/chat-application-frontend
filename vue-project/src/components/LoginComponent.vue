@@ -26,7 +26,7 @@ export default {
         };
     },
     methods: {
-        ...mapActions(['connectWebSocket']),
+        ...mapActions(['connectWebSocket', 'setUsername']),
         loginUser() {
             axios.post('http://localhost:8080/login', {
                 username: this.username,
@@ -36,8 +36,10 @@ export default {
                 localStorage.setItem('token', response.data.token);
                 console.log(response.data);
                 console.log(response.data.token);
+                this.setUsername(this.username);
                 this.connectWebSocket();
                 this.$router.push('/message');
+                console.log(this.username);
             })
             .catch(error => {
                 console.error(error);

@@ -10,6 +10,7 @@ export default new Vuex.Store({
     socket: null,
     client: null,
     connected: false,
+    username: null,
   },
   mutations: {
     SET_SOCKET(state, socket) {
