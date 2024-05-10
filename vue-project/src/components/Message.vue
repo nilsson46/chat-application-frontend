@@ -7,19 +7,28 @@
       <input v-model="messageContent" type="text" placeholder="Skriv ditt meddelande här">
       <button class="button" @click="sendMessage(messageContent)">Skicka</button>
     </div>
+    <!-- Display messages -->
+    <div v-for="message in messages" :key="message.id">
+        <div>
+            <strong>{{ message.sender }} - {{ message.timestamp }}</strong>
+        </div>
+        <div>
+            {{ message.content }}
+        </div>
+    </div>
 </template>
-  
+
 <script>
 import { mapState, mapActions } from 'vuex';
 
 export default {
     data() {
       return {
-        messageContent: ''
+        messageContent: '',
       };
     },
     computed: {
-        ...mapState(['connected'])
+        ...mapState(['connected', 'messages']) 
     },
     methods: {
         ...mapActions(['connectWebSocket', 'sendMessage'])
