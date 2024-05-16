@@ -40,6 +40,22 @@ export default {
                 this.connectWebSocket();
                 this.$router.push('/message');
                 console.log(this.username);
+
+                // Add new axios request here
+                axios.get(`http://localhost:8080/api/messages`, {
+                    headers: {
+                        Authorization: `Bearer ${localStorage.getItem('token')}`
+                    }
+                })
+                .then(response => {
+                    let messages = response.data;
+                    messages.forEach(message => {
+                        this.$store.commit('ADD_MESSAGE', message);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching messages:', error);
+                });
             })
             .catch(error => {
                 console.error(error);
@@ -48,3 +64,4 @@ export default {
     }
 };
 </script>
+

@@ -8,9 +8,9 @@
       <button class="button" @click="sendMessage(messageContent)">Skicka</button>
     </div>
     <!-- Display messages -->
-    <div v-for="message in messages" :key="message.id">
+    <div class="messages" v-for="message in messages" :key="message.id">
         <div>
-            <strong>{{ message.sender }} - {{ message.timestamp }}</strong>
+            <strong>{{ message.sender }} {{ message.timestamp }}</strong>
         </div>
         <div>
             {{ message.content }}
@@ -35,20 +35,23 @@ export default {
     }
 };
 </script>
-
-<style scoped>
-div .navigation{
-    display: flex;
-    justify-content: space-around;
-    font-size: x-large;
-    font-family: 'Courier New', Courier, monospace;
-    background-color: blue;
-    padding: 1rem;
+<style>
+.messages {
+    margin-top: 20px;
+    background-color: lightgray;
+    padding: 10px;
+    border-radius: 5px;
 }
-button{
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-  margin-right: 1rem;
-  margin-left: 1rem;
+.messages > div {
+    margin-bottom: 10px;
+}
+.messages > div > strong {
+    font-weight: bold;
+}
+.messages > div > div {
+    margin-top: 5px;
+}
+.button {
+    margin-right: 10px;
 }
 </style>
