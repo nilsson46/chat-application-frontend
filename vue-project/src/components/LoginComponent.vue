@@ -28,40 +28,35 @@ export default {
     methods: {
         ...mapActions(['connectWebSocket', 'setUsername']),
         loginUser() {
-            axios.post('http://localhost:8080/login', {
-                username: this.username,
-                password: this.password
-            })
-            .then(response => {
-                localStorage.setItem('token', response.data.token);
-                console.log(response.data);
-                console.log(response.data.token);
-                this.setUsername(this.username);
-                this.connectWebSocket();
-                this.$router.push('/message');
-                console.log(this.username);
-
-                // Add new axios request here
-                axios.get(`http://localhost:8080/api/messages`, {
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`
-                    }
-                })
-                .then(response => {
-                    let messages = response.data;
-                    messages.forEach(message => {
-                        this.$store.commit('ADD_MESSAGE', message);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching messages:', error);
-                });
-            })
-            .catch(error => {
-                console.error(error);
+    axios.post('http://localhost:8080/login', {
+        username: this.username,
+        password: this.password
+    })
+    .then(response => {
+        localStorage.setItem('token', response.data.token);
+        console.log('Stored token:', localStorage.getItem('token')); // Log the stored token
+        this.setUsername(this.username);
+        this.connectWebSocket();
+        this.$router.push('/message');
+        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
+        console.log('Authorization header:', axios.defaults.headers.common['Authorization']); // Log the Authorization header
+        axios.get(`http://localhost:8080/api/messages`, {
+        })
+        .then(response => {
+            let messages = response.data;
+            messages.forEach(message => {
+                this.$store.commit('ADD_MESSAGE', message);
             });
-        }
-    }
+        })
+        .catch(error => {
+            console.error('Error fetching messages:', error);
+        });
+    })
+    .catch(error => {
+        console.error('Error logging in:', error);
+    });
+}
+}
 };
 </script>
 
