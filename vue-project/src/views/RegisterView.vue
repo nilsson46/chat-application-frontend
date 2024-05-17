@@ -6,6 +6,6 @@ import Register from '../components/Register.vue'
 <template>
     <div class="about">
         <NavBar/>
-      <Re />
+        <Register />
     </div>
 </template>

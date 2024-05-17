@@ -11,6 +11,7 @@ export default new Vuex.Store({
     client: null,
     connected: false,
     username: null,
+    messages: [],
   },
   mutations: {
     SET_SOCKET(state, socket) {
@@ -24,6 +25,9 @@ export default new Vuex.Store({
     },
     SET_CONNECTED(state, connected) {
       state.connected = connected;
+    },
+    ADD_MESSAGE(state, message) {
+      state.messages.push(message);
     },
   },
   actions: {
@@ -45,6 +49,7 @@ export default new Vuex.Store({
         client.subscribe('/topic/public', (message) => {
           if (message.body) {
             let receivedMessage = JSON.parse(message.body);
+            commit('ADD_MESSAGE', receivedMessage);
             console.log('Received message:', receivedMessage);
           }
         });
