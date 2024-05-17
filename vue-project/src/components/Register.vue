@@ -55,9 +55,7 @@ export default {
     },
     methods: {
         registerUser() {
-            // Make the API request to register the user using the provided endpoint
-            // You can use axios or any other HTTP library for this
-            // Example using axios:
+
             axios.post('http://localhost:8080/register', {
                 username: this.username,
                 password: this.password,
