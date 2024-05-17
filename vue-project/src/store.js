@@ -40,7 +40,6 @@ export default new Vuex.Store({
 
       const client = new Client({ webSocketFactory: () => state.socket });
       commit('SET_CLIENT', client);
-      
 
       client.onConnect = () => {
         console.log('Connected to WebSocket server');
