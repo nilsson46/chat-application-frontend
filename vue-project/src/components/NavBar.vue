@@ -1,13 +1,19 @@
 <script>
-
+export default {
+  computed: {
+    baseUrl() {
+      return `${window.location.protocol}//${window.location.host}`;
+    },
+  },
+};
 </script>
 <template>
     <div>
         <a class="button">Home</a>
-        <a class="button" href="http://localhost:5173/login">Login</a>
-        <a class="button" href="http://localhost:5173/register">Register</a>
-        <a class="button" href="http://localhost:5173/message">Message</a>
-        <a class="button">SOmething</a>
+        <a class="button" :href="`${baseUrl}/login`">Login</a>
+        <a class="button" :href="`${baseUrl}/register`">Register</a>
+        <a class="button" :href="`${baseUrl}/message`">Message</a>
+        <a class="button">Something</a>
     </div>
 
 </template>
