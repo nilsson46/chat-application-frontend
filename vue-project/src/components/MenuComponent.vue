@@ -6,10 +6,13 @@
     <h1>Menu</h1>
     <div>
       <div>
-        Get friends List of friends
+        Get friends List of friends maybe open chat or something? 
       </div>
       <div>
-        get groups List of groups
+        get groups List of groups open the group chat?`
+      </div>
+      <div>
+        <button>Create a group`?</button>
       </div>
       <!--<div v-else>
         Logga in eller registrera dig för att använda appen
