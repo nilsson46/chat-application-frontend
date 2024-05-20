@@ -9,7 +9,7 @@ export default {
 </script>
 <template>
     <div>
-        <a class="button">Home</a>
+        <a class="button" :href="`${baseUrl}/`">Home</a>
         <a class="button" :href="`${baseUrl}/login`">Login</a>
         <a class="button" :href="`${baseUrl}/register`">Register</a>
         <a class="button" :href="`${baseUrl}/message`">Message</a>
