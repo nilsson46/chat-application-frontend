@@ -71,8 +71,8 @@ export default {
                 console.log(response.data);
             })
             .catch(error => {
-                // Handle any errors that occur during the request
-                console.error(error);
+                // Handle the error
+                console.log(error);
             });
         }
     }
