@@ -1,7 +1,5 @@
 <template>
     <div class="navigation">
-      <!-- Anslutningsknapp -->
-      <button class="button" @click="connectWebSocket" :disabled="connected">Anslut till WebSocket</button>
   
       <!-- Inputfält för att skriva meddelanden -->
       <input v-model="messageContent" type="text" placeholder="Skriv ditt meddelande här">
@@ -38,7 +36,7 @@ export default {
 <style>
 .messages {
     margin-top: 20px;
-    background-color: lightgray;
+    background-color: rgb(181, 70, 70);
     padding: 10px;
     border-radius: 5px;
 }
