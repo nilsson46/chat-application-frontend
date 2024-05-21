@@ -36,22 +36,57 @@
                 </div>
             </div>
         </div>
-
+        <div>
+          <input v-model="username" type="text" placeholder="Enter username">
+          <button @click="sendFriendRequest">Send Friend Request</button>
+          <p v-if="message">{{ message }}</p>
+        </div>
+        <div>
+          <h2>Friends</h2>
+          <ul>
+            <li v-for="friend in friends" :key="friend">{{ friend }}</li>
+          </ul>
+      
+          <h2>Friend Requests</h2>
+          <ul>
+            <li v-for="request in friendRequests" :key="request">
+              {{ request }}
+              <button @click="acceptFriendRequest(request)">Accept</button>
+              <button @click="declineFriendRequest(request)">Decline</button>
+            </li>
+          </ul>
+        </div>
     </template>
 
 <script>
+import axios from 'axios';
 export default {
     data() {
         return {
             showModal: false,
             searchTerm: '',
             searchType: '',
+            username: '',
+            message: '',
+            friends: [],
+            friendRequests: [],
         };
     },
     computed: {
     placeholderText() {
       return `Search ${this.searchType}`;
         },
+    },
+    async created() {
+    try {
+      const friendsResponse = await axios.get('http://localhost:9090/friendship/friends');
+      this.friends = friendsResponse.data;
+
+      const requestsResponse = await axios.get('http://localhost:9090/friendship/friendRequests');
+      this.friendRequests = requestsResponse.data;
+    } catch (error) {
+      console.error(error);
+      }
     },
     methods: {
         openModal(type) {
@@ -76,7 +111,32 @@ export default {
         // Implement your search for groups logic here and a list to shown? 
     console.log('Searching for groups:', this.searchTerm);
     },
-    }
+    async sendFriendRequest() {
+      try {
+        const response = await axios.post('friendship/add', null, { params: { otherUsername: this.username } });
+        this.message = response.data;
+      } catch (error) {
+        this.message = error.response ? error.response.data : 'An error occurred';
+      }
+    },
+    async acceptFriendRequest(username) {
+      try {
+        await axios.post('/accept', null, { params: { otherUsername: username } });
+        this.friendRequests = this.friendRequests.filter(request => request !== username);
+        this.friends.push(username);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async declineFriendRequest(username) {
+      try {
+        await axios.post('/decline', null, { params: { otherUsername: username } });
+        this.friendRequests = this.friendRequests.filter(request => request !== username);
+      } catch (error) {
+        console.error(error);
+      }
+    },
+  },
 };
 </script>
 

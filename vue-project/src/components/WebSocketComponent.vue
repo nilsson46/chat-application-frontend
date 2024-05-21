@@ -9,6 +9,7 @@
   </template>
   
   <script>
+  import { mapState, mapActions } from 'vuex';
   //import {Client} from '@stomp/stompjs'
   export default {
     data() {
@@ -21,10 +22,13 @@
     mounted() {
       this.connectWebSocket();
     },
+    computed: {
+    ...mapState(['username', 'token'])
+    },
     methods: {
       connectWebSocket() {
         // Establish WebSocket connection
-        this.socket = new WebSocket(`http://localhost:8080/connect`,'echo-protocol');
+        this.socket = new WebSocket(`http://localhost:9090/connect`,'echo-protocol');
   
         // WebSocket event handlers
         this.socket.onopen = () => {

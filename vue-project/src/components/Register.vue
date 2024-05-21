@@ -56,7 +56,7 @@ export default {
     methods: {
         registerUser() {
 
-            axios.post('http://localhost:8080/register', {
+            axios.post('http://localhost:9090/register', {
                 username: this.username,
                 password: this.password,
                 email: this.email,

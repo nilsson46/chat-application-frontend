@@ -26,37 +26,37 @@ export default {
         };
     },
     methods: {
-        ...mapActions(['connectWebSocket', 'setUsername']),
+        ...mapActions(['connectWebSocket']),
         loginUser() {
-    axios.post('http://localhost:8080/login', {
-        username: this.username,
-        password: this.password
-    })
-    .then(response => {
-        localStorage.setItem('token', response.data.token);
-        console.log('Stored token:', localStorage.getItem('token')); // Log the stored token
-        this.setUsername(this.username);
-        this.connectWebSocket();
-        this.$router.push('/message');
-        axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
-        console.log('Authorization header:', axios.defaults.headers.common['Authorization']); // Log the Authorization header
-        axios.get(`http://localhost:8080/api/messages`, {
-        })
-        .then(response => {
-            let messages = response.data;
-            messages.forEach(message => {
-                this.$store.commit('ADD_MESSAGE', message);
+            axios.post('http://localhost:9090/login', {
+                username: this.username,
+                password: this.password
+            })
+            .then(response => {
+                localStorage.setItem('token', response.data.token);
+                console.log('Stored token:', localStorage.getItem('token')); // Log the stored token
+                this.$store.commit('SET_USERNAME', this.username);
+                this.connectWebSocket();
+                this.$store.commit('SET_TOKEN', response.data.token);
+                this.$router.push('/message');
+                axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
+                console.log('Authorization header:', axios.defaults.headers.common['Authorization']); // Log the Authorization header
+                axios.get(`http://localhost:9090/api/messages`, {
+                })
+                .then(response => {
+                    let messages = response.data;
+                    messages.forEach(message => {
+                        this.$store.commit('ADD_MESSAGE', message);
+                    });
+                })
+                .catch(error => {
+                    console.error('Error fetching messages:', error);
+                });
+            })
+            .catch(error => {
+                console.error('Error logging in:', error);
             });
-        })
-        .catch(error => {
-            console.error('Error fetching messages:', error);
-        });
-    })
-    .catch(error => {
-        console.error('Error logging in:', error);
-    });
-}
-}
+        }
+    }
 };
 </script>
-
