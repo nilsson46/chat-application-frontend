@@ -1,3 +1,4 @@
+
 <template>
     <div>
         <h1>Login</h1>
@@ -14,6 +15,8 @@
         </form>
     </div>
 </template>
+
+
 <script>
 import axios from 'axios';
 import { mapActions } from 'vuex';
@@ -27,35 +30,37 @@ export default {
     },
     methods: {
         ...mapActions(['connectWebSocket']),
-        loginUser() {
-            axios.post('http://localhost:9090/login', {
-                username: this.username,
-                password: this.password
-            })
-            .then(response => {
+        async loginUser() {
+            try {
+                const response = await axios.post('http://localhost:9090/login', {
+                    username: this.username,
+                    password: this.password
+                });
+
+                // Store the token in localStorage
                 localStorage.setItem('token', response.data.token);
-                console.log('Stored token:', localStorage.getItem('token')); // Log the stored token
+
+                // Create an axios instance with the Authorization header set
+                const instance = axios.create({
+                    baseURL: 'http://localhost:9090',
+                    timeout: 1000,
+                    headers: {'Authorization': `Bearer ${response.data.token}`}
+                });
+
                 this.$store.commit('SET_USERNAME', this.username);
                 this.connectWebSocket();
                 this.$store.commit('SET_TOKEN', response.data.token);
                 this.$router.push('/message');
-                axios.defaults.headers.common['Authorization'] = `Bearer ${localStorage.getItem('token')}`;
-                console.log('Authorization header:', axios.defaults.headers.common['Authorization']); // Log the Authorization header
-                axios.get(`http://localhost:9090/api/messages`, {
-                })
-                .then(response => {
-                    let messages = response.data;
-                    messages.forEach(message => {
-                        this.$store.commit('ADD_MESSAGE', message);
-                    });
-                })
-                .catch(error => {
-                    console.error('Error fetching messages:', error);
+
+                // Use the axios instance to fetch messages
+                const messagesResponse = await instance.get('/api/messages');
+                let messages = messagesResponse.data;
+                messages.forEach(message => {
+                    this.$store.commit('ADD_MESSAGE', message);
                 });
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Error logging in:', error);
-            });
+            }
         }
     }
 };

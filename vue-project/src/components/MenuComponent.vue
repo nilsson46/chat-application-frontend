@@ -78,14 +78,19 @@ export default {
         },
     },
     async created() {
-    try {
-      const friendsResponse = await axios.get('http://localhost:9090/friendship/friends');
-      this.friends = friendsResponse.data;
+      try {
+        const token = localStorage.getItem('token'); // replace this with your token retrieval logic
+        const config = {
+          headers: { Authorization: `Bearer ${token}` },
+        };
 
-      const requestsResponse = await axios.get('http://localhost:9090/friendship/friendRequests');
-      this.friendRequests = requestsResponse.data;
-    } catch (error) {
-      console.error(error);
+        const friendsResponse = await axios.get('http://localhost:9090/friendship/friends', config);
+        this.friends = friendsResponse.data;
+
+        const requestsResponse = await axios.get('http://localhost:9090/friendship/friendRequests', config);
+        this.friendRequests = requestsResponse.data;
+      } catch (error) {
+        console.error(error);
       }
     },
     methods: {
@@ -112,30 +117,45 @@ export default {
     console.log('Searching for groups:', this.searchTerm);
     },
     async sendFriendRequest() {
-      try {
-        const response = await axios.post('friendship/add', null, { params: { otherUsername: this.username } });
-        this.message = response.data;
-      } catch (error) {
-        this.message = error.response ? error.response.data : 'An error occurred';
-      }
-    },
-    async acceptFriendRequest(username) {
-      try {
-        await axios.post('/accept', null, { params: { otherUsername: username } });
-        this.friendRequests = this.friendRequests.filter(request => request !== username);
-        this.friends.push(username);
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    async declineFriendRequest(username) {
-      try {
-        await axios.post('/decline', null, { params: { otherUsername: username } });
-        this.friendRequests = this.friendRequests.filter(request => request !== username);
-      } catch (error) {
-        console.error(error);
-      }
-    },
+  try {
+    const token = localStorage.getItem('token'); // replace this with your token retrieval logic
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+      params: { otherUsername: this.username },
+    };
+    const response = await axios.post('http://localhost:9090/friendship/add', null, config);
+    this.message = response.data;
+  } catch (error) {
+    this.message = error.response ? error.response.data : 'An error occurred';
+  }
+},
+  async acceptFriendRequest(username) {
+    try {
+      const token = localStorage.getItem('token'); // replace this with your token retrieval logic
+      const config = {
+        headers: { Authorization: `Bearer ${token}` },
+        params: { otherUsername: username },
+      };
+      await axios.post('http://localhost:9090/friendship/accept', null, config);
+      this.friendRequests = this.friendRequests.filter(request => request !== username);
+      this.friends.push(username);
+    } catch (error) {
+      console.error(error);
+    }
+  },
+  async declineFriendRequest(username) {
+  try {
+    const token = localStorage.getItem('token'); // replace this with your token retrieval logic
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+      params: { otherUsername: username },
+    };
+    await axios.post('http://localhost:9090/friendship/decline', null, config);
+    this.friendRequests = this.friendRequests.filter(request => request !== username);
+  } catch (error) {
+    console.error(error);
+  }
+},
   },
 };
 </script>
