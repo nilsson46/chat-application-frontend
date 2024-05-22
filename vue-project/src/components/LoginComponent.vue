@@ -56,8 +56,12 @@ export default {
                 const messagesResponse = await instance.get('/api/messages');
                 let messages = messagesResponse.data;
                 messages.forEach(message => {
-                    this.$store.commit('ADD_MESSAGE', message);
-                });
+                    if (message.receiver === this.username || message.sender === this.username) {
+                        this.$store.commit('ADD_PRIVATE_MESSAGE', message);
+                    } else {
+                        this.$store.commit('ADD_PUBLIC_MESSAGE', message);
+                    }
+             });
             } catch (error) {
                 console.error('Error logging in:', error);
             }
