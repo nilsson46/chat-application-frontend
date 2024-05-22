@@ -71,12 +71,18 @@ export default new Vuex.Store({
             console.log('Received message:', receivedMessage);
           }
         });
+        client.subscribe(`/topic/private/${state.username}/*`, (message) => {
+          if (message.body) {
+            const newMessage = JSON.parse(message.body);
+            commit('ADD_MESSAGE', newMessage);
+          }
+        });
       };
 
-      client.onDisconnect = () => {
-        console.log('Disconnected from WebSocket server');
-        commit('SET_CONNECTED', false);
-      };
+      //client.onDisconnect = () => {
+       // console.log('Disconnected from WebSocket server');
+       // commit('SET_CONNECTED', false);
+      //};
 
       client.activate();
     },
@@ -95,8 +101,24 @@ export default new Vuex.Store({
       state.client.publish({ destination: '/ws/chat/sendMessage', body: JSON.stringify(message) });
       console.log('Sent message:', message);
     },
-  },
-});
+    sendPrivateMessage({ state }, { recipientUsername, messageContent }) {
+      if (!state.connected) {
+        console.error('You are not connected to the WebSocket server');
+        return;
+      }
+
+      const message = {
+        content: messageContent,
+        sender: state.username,
+        type: 'CHAT'
+      };
+       
+        // Send the message to the private topic
+        state.client.publish({ destination: `/ws/chat/sendMessage/${recipientUsername}`, body: JSON.stringify(message) });
+        console.log('Sent message:', message);
+      }
+    },
+  });
 
 // Retrieve the token from localStorage and set the Authorization header
 const token = localStorage.getItem('token');
