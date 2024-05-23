@@ -126,7 +126,7 @@ export default new Vuex.Store({
 });
 
 // Retrieve the token from localStorage and set the Authorization header
-const token = localStorage.getItem('token');
-if (token) {
-  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-}
+//const token = localStorage.getItem('token');
+//if (token) {
+ // axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+//}
