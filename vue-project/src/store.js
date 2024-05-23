@@ -76,7 +76,7 @@ export default new Vuex.Store({
           }
         });
       
-        client.subscribe(`/topic/private/${state.username}/*`, (message) => {
+        client.subscribe(`/topic/private/maja/simon`, (message) => {
           if (message.body) {
             const newMessage = JSON.parse(message.body);
             if (newMessage.sender === state.username || newMessage.receiver === state.username) {
@@ -98,7 +98,7 @@ export default new Vuex.Store({
       const message = {
         content: messageContent,
         sender: state.username,
-        receiver: 'ALL',
+        receiver: 'PUBLIC',
         type: 'CHAT'
       };
 

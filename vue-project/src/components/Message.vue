@@ -6,7 +6,7 @@
       <button class="button" @click="sendMessage(messageContent)">Skicka</button>
     </div>
     <!-- Display messages -->
-    <div class="messages" v-for="message in messages" :key="message.id">
+    <div class="messages" v-for="message in publicMessages" :key="message.id">
         <div>
             <strong>{{ message.sender }} {{ message.timestamp }}</strong>
         </div>
@@ -26,7 +26,7 @@ export default {
       };
     },
     computed: {
-        ...mapState(['connected', 'messages']) 
+        ...mapState(['connected', 'publicMessages']) 
     },
     methods: {
         ...mapActions(['connectWebSocket', 'sendMessage'])

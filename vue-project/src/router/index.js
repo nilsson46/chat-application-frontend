@@ -3,7 +3,7 @@ import HomeView from '../views/HomeView.vue'
 import MessageView from '../views/MessageView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import LoginView from '../views/LoginView.vue'
-import PrivateMessageView from '../views/PrivateMessageView.vue'
+
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,10 +38,6 @@ const router = createRouter({
     {path: '/login',
     name: 'login',
     component: LoginView
-    },
-    {path: '/private-message',
-    name: 'private-message',
-    component: PrivateMessageView
     }
     
   ]
