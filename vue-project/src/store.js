@@ -76,13 +76,11 @@ export default new Vuex.Store({
           }
         });
       
-        client.subscribe(`/topic/private/maja/simon`, (message) => {
+        client.subscribe(`/topic/private/${state.username}`, (message) => {
           if (message.body) {
             const receivedPrivateMessage = JSON.parse(message.body);
-            //if (receivedPrivateMessage.sender === state.username || receivedPrivateMessage.receiver === state.username) {
-              commit('ADD_PRIVATE_MESSAGE', receivedPrivateMessage);
-              console.log('Received private message:', receivedPrivateMessage);
-            
+            commit('ADD_PRIVATE_MESSAGE', receivedPrivateMessage);
+            console.log('Received private message:', receivedPrivateMessage);
           }
         });
       };
@@ -112,15 +110,15 @@ export default new Vuex.Store({
       }
 
       const message = {
-        content: "hej",
+        content: privateMessageContent,
         sender: state.username,
-        receiver: 'maja',
+        receiver: recipientUsername,
         type: 'CHAT'
       };
        
       // Send the message to the private topic
       state.client.publish({ destination: `/ws/chat/sendMessage/${recipientUsername}`, body: JSON.stringify(message) });
-      console.log('Sent private message:', message);
+      console.log('Sent private message:', message, recipientUsername);
     },
   },
 });
