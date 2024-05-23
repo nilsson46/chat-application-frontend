@@ -1,6 +1,6 @@
 <template>
     <div class="navigation">
-  
+        PUBLIC
       <!-- Inputfält för att skriva meddelanden -->
       <input v-model="messageContent" type="text" placeholder="Skriv ditt meddelande här">
       <button class="button" @click="sendMessage(messageContent)">Skicka</button>

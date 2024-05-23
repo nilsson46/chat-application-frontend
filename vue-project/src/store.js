@@ -78,11 +78,11 @@ export default new Vuex.Store({
       
         client.subscribe(`/topic/private/maja/simon`, (message) => {
           if (message.body) {
-            const newMessage = JSON.parse(message.body);
-            if (newMessage.sender === state.username || newMessage.receiver === state.username) {
-              commit('ADD_PRIVATE_MESSAGE', newMessage);
-              console.log('Received private message:', newMessage);
-            }
+            const receivedPrivateMessage = JSON.parse(message.body);
+            //if (receivedPrivateMessage.sender === state.username || receivedPrivateMessage.receiver === state.username) {
+              commit('ADD_PRIVATE_MESSAGE', receivedPrivateMessage);
+              console.log('Received private message:', receivedPrivateMessage);
+            
           }
         });
       };
@@ -105,16 +105,16 @@ export default new Vuex.Store({
       state.client.publish({ destination: '/ws/chat/sendMessage', body: JSON.stringify(message) });
       console.log('Sent public message:', message);
     },
-    sendPrivateMessage({ state }, { recipientUsername, messageContent }) {
+    sendPrivateMessage({ state }, { recipientUsername, privateMessageContent }) {
       if (!state.connected) {
         console.error('You are not connected to the WebSocket server');
         return;
       }
 
       const message = {
-        content: messageContent,
+        content: "hej",
         sender: state.username,
-        receiver: recipientUsername,
+        receiver: 'maja',
         type: 'CHAT'
       };
        

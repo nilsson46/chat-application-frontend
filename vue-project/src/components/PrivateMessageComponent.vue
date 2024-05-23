@@ -1,13 +1,21 @@
-<template>
-    <div>
-      <h1>Private Chat</h1>
-      <div v-for="message in privateMessages" :key="message.id">
-        <p>{{ message.content }}</p>
-      </div>
-      <input v-model="newMessage" @keyup.enter="sendPrivateMessageHandler" placeholder="Type a message..." />
-      <button class="button" @click="sendPrivateMessageHandler">Skicka</button>
+
+  <template>
+    <div class="navigation">
+      PRIVATE
+      <!-- Inputfält för att skriva meddelanden -->
+      <input v-model="privateMessageContent" type="text" placeholder="Skriv ditt meddelande här">
+      <button class="button" @click="sendPrivateMessage(privateMessageContent)">Skicka</button>
     </div>
-  </template>
+    <!-- Display messages -->
+    <div class="messages" v-for="message in privateMessages" :key="message.id">
+        <div>
+            <strong>{{ message.sender }} {{ message.timestamp }}</strong>
+        </div>
+        <div>
+            {{ message.content }}
+        </div>
+    </div>
+</template>
   
   <script>
   import { mapState, mapActions } from 'vuex';
@@ -15,7 +23,7 @@
   export default {
     data() {
       return {
-        newMessage: '',
+        privateMessageContent: '',
         recipientUsername: 'maja', // Replace with the actual recipient's username
       };
     },
@@ -24,11 +32,27 @@
     },
     methods: {
       ...mapActions(['connectWebSocket','sendPrivateMessage']), // Changed from 'sendPrivateMessageAction' to 'sendPrivateMessage'
-      sendPrivateMessageHandler() {
-        this.sendPrivateMessage({ recipientUsername: this.recipientUsername, messageContent: this.newMessage });
-        //this.privateMessages.push({ content: this.newMessage, sender: this.recipientUsername });
-        this.newMessage = '';
+
       },
-    },
   };
   </script>
+  <style>
+  .messages {
+      margin-top: 20px;
+      background-color: rgb(124, 70, 181);
+      padding: 10px;
+      border-radius: 5px;
+  }
+  .messages > div {
+      margin-bottom: 10px;
+  }
+  .messages > div > strong {
+      font-weight: bold;
+  }
+  .messages > div > div {
+      margin-top: 5px;
+  }
+  .button {
+      margin-right: 10px;
+  }
+  </style>
