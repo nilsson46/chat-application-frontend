@@ -69,6 +69,7 @@ export default {
             .then(response => {
                 // Handle the response from the server
                 console.log(response.data);
+                this.$router.push('/login');
             })
             .catch(error => {
                 // Handle the error
