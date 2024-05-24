@@ -45,12 +45,18 @@ export default new Vuex.Store({
         state.isLoggedIn = false;
       }
     },
+    SET_ERROR_MESSAGE(state, errorMessage) {
+      state.errorMessage = errorMessage;
+    },
   },
   actions: {
     login({ commit, dispatch }, { username, token }) {
       commit('SET_USERNAME', username);
       commit('SET_TOKEN', token);
       dispatch('connectWebSocket');
+    },
+    showErrorMessage({ commit }, errorMessage) {
+      commit('SET_ERROR_MESSAGE', errorMessage);
     },
     connectWebSocket({ commit, state }) {
       const socket = new SockJS(`${state.socketUrl}/connect`);
@@ -110,7 +116,7 @@ export default new Vuex.Store({
       state.client.publish({ destination: '/ws/chat/sendMessage', body: JSON.stringify(message) });
       console.log('Sent public message:', message);
     },
-   async sendPrivateMessage({ commit, state }, { recipientUsername, privateMessageContent }) {
+   async sendPrivateMessage({ commit, state, dispatch }, { recipientUsername, privateMessageContent }) {
       if (!state.connected) {
         console.error('You are not connected to the WebSocket server');
         return;
@@ -122,6 +128,7 @@ export default new Vuex.Store({
       // Check if the recipient is a friend of the sender
       if (!response.data.includes(recipientUsername)) {
         console.error('The recipient is not a friend of the sender');
+        dispatch('showErrorMessage', 'The recipient is not a friend of the sender')
         return;
       }
     
