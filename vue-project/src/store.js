@@ -45,12 +45,18 @@ export default new Vuex.Store({
         state.isLoggedIn = false;
       }
     },
+    SET_ERROR_MESSAGE(state, errorMessage) {
+      state.errorMessage = errorMessage;
+    },
   },
   actions: {
     login({ commit, dispatch }, { username, token }) {
       commit('SET_USERNAME', username);
       commit('SET_TOKEN', token);
       dispatch('connectWebSocket');
+    },
+    showErrorMessage({ commit }, errorMessage) {
+      commit('SET_ERROR_MESSAGE', errorMessage);
     },
     connectWebSocket({ commit, state }) {
       const socket = new SockJS(`${state.socketUrl}/connect`);
@@ -60,6 +66,13 @@ export default new Vuex.Store({
         webSocketFactory: () => state.socket,
         connectHeaders: {
           Authorization: `Bearer ${state.token}`,
+        },
+        onStompError: (frame) => {
+          // Handle the error
+          console.error('Received error from server:', frame.body);
+          if (frame.body.includes('Receiver not found')) {
+            console.error('The recipient username does not exist');
+          }
         },
       });
       commit('SET_CLIENT', client);
@@ -103,9 +116,19 @@ export default new Vuex.Store({
       state.client.publish({ destination: '/ws/chat/sendMessage', body: JSON.stringify(message) });
       console.log('Sent public message:', message);
     },
-    sendPrivateMessage({ commit, state }, { recipientUsername, privateMessageContent }) {
+   async sendPrivateMessage({ commit, state, dispatch }, { recipientUsername, privateMessageContent }) {
       if (!state.connected) {
         console.error('You are not connected to the WebSocket server');
+        return;
+      }
+    
+      // Get the list of friends of the sender
+      const response = await axios.get(`${state.socketUrl}/friendship/friends`);
+    
+      // Check if the recipient is a friend of the sender
+      if (!response.data.includes(recipientUsername)) {
+        console.error('The recipient is not a friend of the sender');
+        dispatch('showErrorMessage', 'The recipient is not a friend of the sender')
         return;
       }
     
@@ -119,7 +142,7 @@ export default new Vuex.Store({
       // Send the message to the private topic
       state.client.publish({ destination: `/ws/chat/sendMessage/${recipientUsername}`, body: JSON.stringify(message) });
       console.log('Sent private message:', message, recipientUsername);
-    
+        
       // Add the sent message to the privateMessages array
       commit('ADD_PRIVATE_MESSAGE', message);
     },

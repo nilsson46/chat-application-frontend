@@ -8,6 +8,7 @@
     <input v-model="privateMessageContent" type="text" placeholder="Skriv ditt meddelande här">
     <button class="button" @click="sendPrivateMessage({ recipientUsername, privateMessageContent })">Skicka</button>
   </div>
+  <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
   <!-- Display messages -->
   <div class="messages" v-for="message in filteredPrivateMessages" :key="message.id">
       <div>
@@ -33,6 +34,9 @@ export default {
     ...mapState(['connected','privateMessages']),
     filteredPrivateMessages() {
       return this.privateMessages.filter(message => message.type === 'PRIVATE');
+    },
+    errorMessage() {
+      return this.$store.state.errorMessage;
     }
   },
   methods: {
