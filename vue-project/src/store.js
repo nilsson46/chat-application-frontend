@@ -70,12 +70,12 @@ export default new Vuex.Store({
       
         client.subscribe('/topic/public', (message) => {
           if (message.body) {
-            let receivedMessage = JSON.parse(message.body);
-            commit('ADD_PUBLIC_MESSAGE', receivedMessage);
-            console.log('Received public message:', receivedMessage);
+            let receivedPublicMessage = JSON.parse(message.body);
+            commit('ADD_PUBLIC_MESSAGE', receivedPublicMessage);
+            console.log('Received public message:', receivedPublicMessage);
           }
         });
-      
+        
         client.subscribe(`/topic/private/${state.username}`, (message) => {
           if (message.body) {
             const receivedPrivateMessage = JSON.parse(message.body);
@@ -87,7 +87,7 @@ export default new Vuex.Store({
 
       client.activate();
     },
-    sendMessage({ state }, messageContent) {
+    sendPublicMessage({ state }, messageContent) {
       if (!state.connected) {
         console.error('You are not connected to the WebSocket server');
         return;
@@ -97,28 +97,31 @@ export default new Vuex.Store({
         content: messageContent,
         sender: state.username,
         receiver: 'PUBLIC',
-        type: 'CHAT'
+        type: 'PUBLIC'
       };
 
       state.client.publish({ destination: '/ws/chat/sendMessage', body: JSON.stringify(message) });
       console.log('Sent public message:', message);
     },
-    sendPrivateMessage({ state }, { recipientUsername, privateMessageContent }) {
+    sendPrivateMessage({ commit, state }, { recipientUsername, privateMessageContent }) {
       if (!state.connected) {
         console.error('You are not connected to the WebSocket server');
         return;
       }
-
+    
       const message = {
         content: privateMessageContent,
         sender: state.username,
         receiver: recipientUsername,
-        type: 'CHAT'
+        type: 'PRIVATE'
       };
        
       // Send the message to the private topic
       state.client.publish({ destination: `/ws/chat/sendMessage/${recipientUsername}`, body: JSON.stringify(message) });
       console.log('Sent private message:', message, recipientUsername);
+    
+      // Add the sent message to the privateMessages array
+      commit('ADD_PRIVATE_MESSAGE', message);
     },
   },
 });

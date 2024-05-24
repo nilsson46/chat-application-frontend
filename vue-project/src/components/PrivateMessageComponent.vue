@@ -9,7 +9,7 @@
     <button class="button" @click="sendPrivateMessage({ recipientUsername, privateMessageContent })">Skicka</button>
   </div>
   <!-- Display messages -->
-  <div class="messages" v-for="message in privateMessages" :key="message.id">
+  <div class="messages" v-for="message in filteredPrivateMessages" :key="message.id">
       <div>
           <strong>{{ message.sender }} {{ message.timestamp }}</strong>
       </div>
@@ -31,6 +31,9 @@ export default {
   },
   computed: {
     ...mapState(['connected','privateMessages']),
+    filteredPrivateMessages() {
+      return this.privateMessages.filter(message => message.type === 'PRIVATE');
+    }
   },
   methods: {
     ...mapActions(['connectWebSocket','sendPrivateMessage']),

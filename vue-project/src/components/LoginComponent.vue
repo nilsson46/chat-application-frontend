@@ -62,7 +62,7 @@ export default {
 
                 let messages = messagesResponse.data;
                 messages.forEach(message => {
-                    if (message.receiver === this.username || message.sender === this.username) {
+                    if (message.type === 'PRIVATE' && (message.receiver === this.username || message.sender === this.username)) {
                         this.$store.commit('ADD_PRIVATE_MESSAGE', message);
                     } else {
                         this.$store.commit('ADD_PUBLIC_MESSAGE', message);
