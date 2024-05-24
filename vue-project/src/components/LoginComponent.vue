@@ -1,4 +1,3 @@
-
 <template>
     <div>
         <h1>Login</h1>
@@ -31,11 +30,14 @@ export default {
     methods: {
         ...mapActions(['connectWebSocket']),
         async loginUser() {
+            console.log('Logging in with username:', this.username);
             try {
                 const response = await axios.post('http://localhost:9090/login', {
                     username: this.username,
                     password: this.password
                 });
+
+                console.log('Login response:', response);
 
                 // Store the token in localStorage
                 localStorage.setItem('token', response.data.token);
@@ -47,6 +49,8 @@ export default {
                     headers: {'Authorization': `Bearer ${response.data.token}`}
                 });
 
+                console.log('Created axios instance:', instance);
+
                 this.$store.commit('SET_USERNAME', this.username);
                 this.connectWebSocket();
                 this.$store.commit('SET_TOKEN', response.data.token);
@@ -54,9 +58,15 @@ export default {
 
                 // Use the axios instance to fetch messages
                 const messagesResponse = await instance.get('/api/messages');
+                console.log('Messages response:', messagesResponse);
+
                 let messages = messagesResponse.data;
                 messages.forEach(message => {
-                    this.$store.commit('ADD_MESSAGE', message);
+                    if (message.type === 'PRIVATE' && (message.receiver === this.username || message.sender === this.username)) {
+                        this.$store.commit('ADD_PRIVATE_MESSAGE', message);
+                    } else {
+                        this.$store.commit('ADD_PUBLIC_MESSAGE', message);
+                    }
                 });
             } catch (error) {
                 console.error('Error logging in:', error);

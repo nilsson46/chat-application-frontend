@@ -13,6 +13,7 @@ export default {
         <a class="button" :href="`${baseUrl}/login`">Login</a>
         <a class="button" :href="`${baseUrl}/register`">Register</a>
         <a class="button" :href="`${baseUrl}/message`">Message</a>
+        <a class="button" :href="`${baseUrl}/message`">Private Message</a>
         <a class="button">Something</a>
     </div>
 

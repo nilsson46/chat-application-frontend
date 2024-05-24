@@ -11,7 +11,8 @@ export default new Vuex.Store({
     client: null,
     connected: false,
     username: null,
-    messages: [],
+    publicMessages: [],
+    privateMessages: [],
     token: null,
     isLoggedIn: false,
   },
@@ -28,8 +29,11 @@ export default new Vuex.Store({
     SET_CONNECTED(state, connected) {
       state.connected = connected;
     },
-    ADD_MESSAGE(state, message) {
-      state.messages.push(message);
+    ADD_PUBLIC_MESSAGE(state, message) {
+      state.publicMessages.push(message);
+    },
+    ADD_PRIVATE_MESSAGE(state, message) {
+      state.privateMessages.push(message);
     },
     SET_TOKEN(state, token) {
       state.token = token;
@@ -63,24 +67,27 @@ export default new Vuex.Store({
       client.onConnect = () => {
         console.log('Connected to WebSocket server');
         commit('SET_CONNECTED', true);
-
+      
         client.subscribe('/topic/public', (message) => {
           if (message.body) {
-            let receivedMessage = JSON.parse(message.body);
-            commit('ADD_MESSAGE', receivedMessage);
-            console.log('Received message:', receivedMessage);
+            let receivedPublicMessage = JSON.parse(message.body);
+            commit('ADD_PUBLIC_MESSAGE', receivedPublicMessage);
+            console.log('Received public message:', receivedPublicMessage);
+          }
+        });
+        
+        client.subscribe(`/topic/private/${state.username}`, (message) => {
+          if (message.body) {
+            const receivedPrivateMessage = JSON.parse(message.body);
+            commit('ADD_PRIVATE_MESSAGE', receivedPrivateMessage);
+            console.log('Received private message:', receivedPrivateMessage);
           }
         });
       };
 
-      client.onDisconnect = () => {
-        console.log('Disconnected from WebSocket server');
-        commit('SET_CONNECTED', false);
-      };
-
       client.activate();
     },
-    sendMessage({ state }, messageContent) {
+    sendPublicMessage({ state }, messageContent) {
       if (!state.connected) {
         console.error('You are not connected to the WebSocket server');
         return;
@@ -89,17 +96,38 @@ export default new Vuex.Store({
       const message = {
         content: messageContent,
         sender: state.username,
-        type: 'CHAT'
+        receiver: 'PUBLIC',
+        type: 'PUBLIC'
       };
 
       state.client.publish({ destination: '/ws/chat/sendMessage', body: JSON.stringify(message) });
-      console.log('Sent message:', message);
+      console.log('Sent public message:', message);
+    },
+    sendPrivateMessage({ commit, state }, { recipientUsername, privateMessageContent }) {
+      if (!state.connected) {
+        console.error('You are not connected to the WebSocket server');
+        return;
+      }
+    
+      const message = {
+        content: privateMessageContent,
+        sender: state.username,
+        receiver: recipientUsername,
+        type: 'PRIVATE'
+      };
+       
+      // Send the message to the private topic
+      state.client.publish({ destination: `/ws/chat/sendMessage/${recipientUsername}`, body: JSON.stringify(message) });
+      console.log('Sent private message:', message, recipientUsername);
+    
+      // Add the sent message to the privateMessages array
+      commit('ADD_PRIVATE_MESSAGE', message);
     },
   },
 });
 
 // Retrieve the token from localStorage and set the Authorization header
-const token = localStorage.getItem('token');
-if (token) {
-  axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-}
+//const token = localStorage.getItem('token');
+//if (token) {
+ // axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+//}
