@@ -33,15 +33,19 @@ export default {
   computed: {
     ...mapState(['connected','privateMessages']),
     filteredPrivateMessages() {
-      return this.privateMessages.filter(message => message.type === 'PRIVATE');
-    },
-    errorMessage() {
-      return this.$store.state.errorMessage;
-    }
+    console.log(this.privateMessages); // log the privateMessages array
+    const filtered = this.privateMessages.filter(message => message.type === 'PRIVATE');
+    console.log(filtered); // log the filtered array
+    return filtered;
+  },
+  errorMessage() {
+    return this.$store.state.errorMessage;
+  }
   },
   methods: {
     ...mapActions(['connectWebSocket','sendPrivateMessage']),
   },
+  
 };
 </script>
   <style>
