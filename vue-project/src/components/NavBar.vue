@@ -1,8 +1,17 @@
 <script>
+import { mapActions, mapState } from 'vuex';
 export default {
   computed: {
     baseUrl() {
       return `${window.location.protocol}//${window.location.host}`;
+    },
+    ...mapState(['username']),
+  },
+  methods: {
+    ...mapActions(['logout']),
+    async handleLogout() {
+      await this.logout();
+      this.$router.push('/login');
     },
   },
 };
@@ -10,11 +19,12 @@ export default {
 <template>
     <div>
         <a class="button" :href="`${baseUrl}/`">Home</a>
-        <a class="button" :href="`${baseUrl}/login`">Login</a>
+        <a class="button" v-if="!username" :href="`${baseUrl}/login`">Login</a>
         <a class="button" :href="`${baseUrl}/register`">Register</a>
         <a class="button" :href="`${baseUrl}/message`">Message</a>
         <a class="button" :href="`${baseUrl}/message`">Private Message</a>
-        <a class="button">Something</a>
+        <button class="button" @click="logout">Logout</button>
+        <div v-if="username">Logged in as: {{ username }}</div>
     </div>
 
 </template>

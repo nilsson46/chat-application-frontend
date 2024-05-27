@@ -3,6 +3,7 @@ import Vuex from 'vuex';
 import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import axios from 'axios';
+import createPersistedState from 'vuex-persistedstate';
 
 export default new Vuex.Store({
   state: {
@@ -16,6 +17,10 @@ export default new Vuex.Store({
     token: null,
     isLoggedIn: false,
   },
+  plugins: [
+    createPersistedState({
+      paths: ['username', 'publicMessages', 'privateMessages', 'token', 'isLoggedIn'],
+    })],
   mutations: {
     SET_SOCKET(state, socket) {
       state.socket = socket;
@@ -48,12 +53,22 @@ export default new Vuex.Store({
     SET_ERROR_MESSAGE(state, errorMessage) {
       state.errorMessage = errorMessage;
     },
+    RESET_STATE(state) {
+      state.username = null;
+      state.publicMessages = [];
+      state.privateMessages = [];
+      state.token = null;
+      state.isLoggedIn = false;
+    },
   },
   actions: {
     login({ commit, dispatch }, { username, token }) {
       commit('SET_USERNAME', username);
       commit('SET_TOKEN', token);
       dispatch('connectWebSocket');
+    },
+    logout({ commit }) {
+      commit('RESET_STATE');
     },
     showErrorMessage({ commit }, errorMessage) {
       commit('SET_ERROR_MESSAGE', errorMessage);
