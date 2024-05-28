@@ -20,9 +20,8 @@ export default {
     <div>
         <a class="button" :href="`${baseUrl}/`">Home</a>
         <a class="button" v-if="!username" :href="`${baseUrl}/login`">Login</a>
-        <a class="button" :href="`${baseUrl}/register`">Register</a>
+        <a class="button" v-if="!username" :href="`${baseUrl}/register`">Register</a>
         <a class="button" :href="`${baseUrl}/message`">Message</a>
-        <a class="button" :href="`${baseUrl}/message`">Private Message</a>
         <button class="button" @click="handleLogout">Logout</button>
         <div v-if="username">Logged in as: {{ username }}</div>
     </div>

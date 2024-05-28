@@ -4,6 +4,7 @@
       <!-- Inputfält för att skriva meddelanden -->
       <input v-model="messageContent" type="text" placeholder="Skriv ditt meddelande här">
       <button class="button" @click="sendPublicMessage(messageContent)">Skicka</button>
+      <p v-if="errorMessage" class="error">{{ errorMessage }}</p>
     </div>
     <!-- Display messages -->
     <div class="messages" v-for="message in publicMessages" :key="message.id">
@@ -23,13 +24,23 @@ export default {
     data() {
       return {
         messageContent: '',
+        errorMessage: ''
       };
     },
     computed: {
         ...mapState(['connected', 'publicMessages']) 
     },
     methods: {
-        ...mapActions(['connectWebSocket', 'sendPublicMessage'])
+        ...mapActions(['connectWebSocket']),
+        sendPublicMessage() {
+            if (this.messageContent ===''){ 
+                this.errorMessage = 'Message cannot be empty';
+            } else {
+                this.$store.dispatch('sendPublicMessage', this.messageContent);
+                this.messageContent = '';
+                this.errorMessage = '';
+            }
+        }
     },
     created() {
   console.log('WebSocket connection status:', this.connected);

@@ -6,9 +6,10 @@
     <input v-model="recipientUsername" type="text" placeholder="Enter recipient's username">
     <!-- Input field for the message content -->
     <input v-model="privateMessageContent" type="text" placeholder="Skriv ditt meddelande här">
-    <button class="button" @click="sendPrivateMessage({ recipientUsername, privateMessageContent })">Skicka</button>
+    <button class="button" @click="sendPrivateMessage">Skicka</button>
+    <p v-if="imputErrorMessage" class="error">{{ imputErrorMessage }}</p>
   </div>
-  <div v-if="errorMessage" class="error-message">{{ errorMessage }}</div>
+
   <!-- Display messages -->
   <div class="messages" v-for="message in filteredPrivateMessages" :key="message.id">
       <div>
@@ -28,6 +29,7 @@ export default {
     return {
       privateMessageContent: '',
       recipientUsername: '',
+      imputErrorMessage: ''
     };
   },
   computed: {
@@ -43,9 +45,20 @@ export default {
   }
   },
   methods: {
-    ...mapActions(['connectWebSocket','sendPrivateMessage']),
-  },
-  
+    ...mapActions(['connectWebSocket']),
+sendPrivateMessage() {
+  if (this.recipientUsername === '') {
+      this.imputErrorMessage = 'Recipient cannot be empty';
+  } else if (this.privateMessageContent === '') {
+      this.imputErrorMessage = 'Message cannot be empty';
+  } else {
+      this.$store.dispatch('sendPrivateMessage', { recipientUsername: this.recipientUsername, privateMessageContent: this.privateMessageContent });
+      this.privateMessageContent = '';
+      this.recipientUsername = '';
+      this.imputErrorMessage = '';
+  }
+},
+},
 };
 </script>
   <style>
