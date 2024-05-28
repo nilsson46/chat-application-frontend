@@ -74,6 +74,10 @@ export default new Vuex.Store({
       commit('SET_ERROR_MESSAGE', errorMessage);
     },
     connectWebSocket({ commit, state }) {
+      if (state.client && state.connected) {
+        console.log('Already connected to WebSocket server');
+        return;
+      }
       const socket = new SockJS(`${state.socketUrl}/connect`);
       commit('SET_SOCKET', socket);
 

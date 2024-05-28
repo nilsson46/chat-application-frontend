@@ -24,6 +24,7 @@ export default {
     data() {
       return {
         messageContent: '',
+        errorMessage: ''
       };
     },
     computed: {
@@ -32,7 +33,7 @@ export default {
     methods: {
         ...mapActions(['connectWebSocket']),
         sendPublicMessage() {
-            if (!this.messageContent.trim()) {
+            if (this.messageContent ===''){ 
                 this.errorMessage = 'Message cannot be empty';
             } else {
                 this.$store.dispatch('sendPublicMessage', this.messageContent);
