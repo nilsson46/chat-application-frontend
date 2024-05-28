@@ -1,10 +1,9 @@
 <template>
   <div class="navigation">
-    PRIVATE
+
     <div class="friends-list">
       <div v-for="friend in friends" :key="friend" class="friend">
-        <button @click="selectFriend(friend)">Chat</button>
-        <span>{{ friend }}</span>
+        <span @click="selectFriend(friend)">{{ friend }}</span>
       </div>
     </div>
 
@@ -17,7 +16,7 @@
       <input v-model="privateMessageContent" type="text" placeholder="Skriv ditt meddelande här">
       <button class="button" @click="sendPrivateMessage">Skicka</button>
       <p v-if="imputErrorMessage" class="error">{{ imputErrorMessage }}</p>
-
+      <div class="chat">
       <!-- Display messages -->
       <div class="messages" v-for="message in filteredPrivateMessages" :key="message.id">
         <div>
@@ -29,6 +28,7 @@
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <script>
@@ -99,6 +99,90 @@ export default {
 };
 </script>
 
-<style>
-/* Add your existing styles here */
+<style scoped>
+
+.friends-list {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  background-color: #3a2e2e;
+}
+.friend{
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #714444;
+  margin-bottom: 10px;
+}
+
+.navigation {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 10px;
+  background-color: #3a2e2e;
+}
+
+@media (min-width: 768px) {
+  .navigation {
+    flex-direction: row;
+  }
+}
+
+.friend:hover {
+  background-color: #c99595;
+}
+
+.friend button {
+  margin-right: 10px;
+}
+
+.chat {
+  width: 100%;
+  padding: 10px;
+  height: 500px; /* Adjust this value as needed */
+  overflow-y: auto;
+}
+
+@media (min-width: 768px) {
+  .chat {
+    width: 70%;
+  }
+}
+
+.chat .messages {
+  background-color: #714444;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.messages strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+input[type="text"] {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  box-sizing: border-box;
+}
+
+.button {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: #0056b3;
+}
+
+.error {
+  color: red;
+}
 </style>
