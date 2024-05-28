@@ -147,7 +147,8 @@ export default new Vuex.Store({
     
       // Get the list of friends of the sender
       const response = await axios.get(`${state.socketUrl}/friendship/friends`);
-    
+      console.log('Friends list:', response.data); // Add this line
+      console.log('Recipient:', recipientUsername);
       // Check if the recipient is a friend of the sender
       if (!response.data.includes(recipientUsername)) {
         console.error('The recipient is not a friend of the sender');
