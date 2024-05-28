@@ -29,7 +29,11 @@ export default {
         ...mapState(['connected', 'publicMessages']) 
     },
     methods: {
-        ...mapActions(['connectWebSocket', 'sendPublicMessage'])
+        ...mapActions(['connectWebSocket', 'sendPublicMessage']),
+        async handleSendPublicMessage(content) {
+        await this.sendPublicMessage(content);
+        this.messageContent = '';
+  },
     },
     created() {
   console.log('WebSocket connection status:', this.connected);
