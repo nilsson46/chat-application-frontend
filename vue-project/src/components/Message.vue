@@ -30,7 +30,13 @@ export default {
     },
     methods: {
         ...mapActions(['connectWebSocket', 'sendPublicMessage'])
-    }
+    },
+    created() {
+  console.log('WebSocket connection status:', this.connected);
+  if (!this.connected) {
+            this.connectWebSocket();
+        }
+}
 };
 </script>
 <style>

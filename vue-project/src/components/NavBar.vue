@@ -23,7 +23,7 @@ export default {
         <a class="button" :href="`${baseUrl}/register`">Register</a>
         <a class="button" :href="`${baseUrl}/message`">Message</a>
         <a class="button" :href="`${baseUrl}/message`">Private Message</a>
-        <button class="button" @click="logout">Logout</button>
+        <button class="button" @click="handleLogout">Logout</button>
         <div v-if="username">Logged in as: {{ username }}</div>
     </div>
 
