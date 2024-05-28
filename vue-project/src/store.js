@@ -17,7 +17,6 @@ export default new Vuex.Store({
     token: null,
     isLoggedIn: false,
   },
-  
   plugins: [
     createPersistedState({
       paths: ['username', 'publicMessages', 'privateMessages', 'token', 'isLoggedIn'],
@@ -71,12 +70,6 @@ export default new Vuex.Store({
     logout({ commit }) {
       commit('RESET_STATE');
     },
-    initializeStore({ commit }) {
-      const token = localStorage.getItem('token');
-      if (token) {
-        commit('SET_TOKEN', token);
-      }
-    },
     showErrorMessage({ commit }, errorMessage) {
       commit('SET_ERROR_MESSAGE', errorMessage);
     },
@@ -97,7 +90,6 @@ export default new Vuex.Store({
           }
         },
       });
-      
       commit('SET_CLIENT', client);
 
       client.onConnect = () => {
