@@ -16,6 +16,8 @@ export default new Vuex.Store({
     privateMessages: [],
     token: null,
     isLoggedIn: false,
+    publicSubscription: null,
+    privateSubscription: null,
   },
   
   plugins: [
@@ -103,8 +105,16 @@ export default new Vuex.Store({
       client.onConnect = () => {
         console.log('Connected to WebSocket server');
         commit('SET_CONNECTED', true);
-      
-        client.subscribe('/topic/public', (message) => {
+
+        // Unsubscribe from the topics before subscribing again
+        if (state.publicSubscription) {
+          state.publicSubscription.unsubscribe();
+        }
+        if (state.privateSubscription) {
+          state.privateSubscription.unsubscribe();
+        }
+
+        state.publicSubscription = client.subscribe('/topic/public', (message) => {
           if (message.body) {
             let receivedPublicMessage = JSON.parse(message.body);
             commit('ADD_PUBLIC_MESSAGE', receivedPublicMessage);
@@ -112,7 +122,7 @@ export default new Vuex.Store({
           }
         });
         
-        client.subscribe(`/topic/private/${state.username}`, (message) => {
+        state.privateSubscription = client.subscribe(`/topic/private/${state.username}`, (message) => {
           if (message.body) {
             const receivedPrivateMessage = JSON.parse(message.body);
             commit('ADD_PRIVATE_MESSAGE', receivedPrivateMessage);
@@ -147,7 +157,8 @@ export default new Vuex.Store({
     
       // Get the list of friends of the sender
       const response = await axios.get(`${state.socketUrl}/friendship/friends`);
-    
+      console.log('Friends list:', response.data); // Add this line
+      console.log('Recipient:', recipientUsername);
       // Check if the recipient is a friend of the sender
       if (!response.data.includes(recipientUsername)) {
         console.error('The recipient is not a friend of the sender');
@@ -171,9 +182,3 @@ export default new Vuex.Store({
     },
   },
 });
-
-// Retrieve the token from localStorage and set the Authorization header
-//const token = localStorage.getItem('token');
-//if (token) {
- // axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-//}

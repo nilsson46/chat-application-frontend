@@ -5,8 +5,9 @@ import App from './App.vue'
 import router from './router'
 import store from './store';
 
-store.dispatch('initializeStore');
+
 const app = createApp(App)
+store.dispatch('initializeStore'); 
 
 app.use(store)
 app.use(router)
