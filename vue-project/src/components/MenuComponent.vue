@@ -214,7 +214,7 @@ export default {
     padding: 10px 20px;
     font-size: 15px;
     color: white;
-    background-color: #449c47;
+    background-color: #3d773f;
     border: none;
     border-radius: 5px;
     cursor: pointer;

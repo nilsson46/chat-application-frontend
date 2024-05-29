@@ -113,6 +113,7 @@ export default {
   padding: 10px;
   background-color: #714444;
   margin-bottom: 10px;
+  cursor: pointer;
 }
 
 .navigation {
@@ -135,6 +136,7 @@ export default {
 
 .friend button {
   margin-right: 10px;
+  
 }
 
 .chat {
