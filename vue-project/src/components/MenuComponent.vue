@@ -1,46 +1,35 @@
 <template>
   <div :class="{ 'blur-background': showModal }">
-    <!--<div v-if="$store.state.isLoggedIn">
-      Loggad
-    </div>-->
     <h1>Menu</h1>
     <div>
-      <div>
-        Get friends List of friends maybe open chat or something? 
-      </div>
-      <div>
-        get groups List of groups open the group chat?`
-      </div>
-      <div>
-        <button>Create a group`?</button>
-      </div>
-      <!--<div v-else>
-        Logga in eller registrera dig för att använda appen
-      </div>-->
       <div class="buttons">
         <button @click="openModal('friends')">Open Friends Modal</button>
         <button @click="openModal('groups')">Open Groups Modal</button>
-        </div>
+      </div>
     </div>
-  </div>
 
-        <div>
-            
-            <div class="modal" v-if="showModal">
-                <div class="modal-content">
-                    <!-- Content of the modal window -->
-                    <h2>Modal Window</h2>
-                    <input class="inputField" type="text" v-model="searchTerm" :placeholder="placeholderText" @input="search">
-                    <p>the get request should be done every search i guess?</p>
-                    <button @click="closeModal">Close</button>
-                </div>
-            </div>
+    <div class="modal" v-if="showModal">
+      <div class="modal-content">
+        <h2>Modal Window</h2>
+        <input class="inputField" type="text" v-model="searchTerm" :placeholder="placeholderText" @input="search">
+        
+
+        <!-- Moved friend request related elements here -->
+        <div v-if="searchType === 'friends'">
+          <!-- Removed the old input field and button -->
+        
+          <!-- Dropdown list of search results -->
+          <div v-if="searchResults.length > 0">
+            <ul>
+              <li v-for="result in searchResults" :key="result">
+                {{ result }}
+                <!-- Added a button next to each result -->
+                <button @click="sendFriendRequest(result)">Send Friend Request</button>
+              </li>
+            </ul>
+          </div>
         </div>
-        <div>
-          <input v-model="username" type="text" placeholder="Enter username">
-          <button @click="sendFriendRequest">Send Friend Request</button>
-          <p v-if="message">{{ message }}</p>
-        </div>
+
         <div>
           <h2>Friends</h2>
           <ul>
@@ -50,13 +39,18 @@
           <h2>Friend Requests</h2>
           <ul>
             <li v-for="request in friendRequests" :key="request">
-              {{ request }}
-              <button @click="acceptFriendRequest(request)">Accept</button>
-              <button @click="declineFriendRequest(request)">Decline</button>
-            </li>
+            {{ request }}
+            <button @click="acceptFriendRequest(request)">Accept</button>
+            <button @click="declineFriendRequest(request)">Decline</button>
+          </li>
           </ul>
         </div>
-    </template>
+        <button @click="closeModal">Close</button>
+      </div>
+      
+    </div>
+  </div>
+</template>
 
 <script>
 import axios from 'axios';
@@ -70,6 +64,7 @@ export default {
             message: '',
             friends: [],
             friendRequests: [],
+            searchResults: [],
         };
     },
     computed: {
@@ -108,20 +103,32 @@ export default {
         this.searchGroups();
       }
     },
-    searchFriends() {
-    // Implement your search for friends logic here and a list to shown? 
-        console.log('Searching for friends:', this.searchTerm);
-    },
-    searchGroups() {
-        // Implement your search for groups logic here and a list to shown? 
-    console.log('Searching for groups:', this.searchTerm);
-    },
-    async sendFriendRequest() {
+    async searchFriends() {
   try {
     const token = localStorage.getItem('token'); // replace this with your token retrieval logic
     const config = {
       headers: { Authorization: `Bearer ${token}` },
-      params: { otherUsername: this.username },
+      params: { keyword: this.searchTerm }, // pass the search term as a query parameter
+      
+    };
+    const searchResponse = await axios.get('http://localhost:9090/friendship/search', config);
+
+    // Update the search results with the response data
+    this.searchResults = searchResponse.data;
+  } catch (error) {
+    console.error(error);
+  }
+},
+    searchGroups() {
+        // Implement your search for groups logic here and a list to shown? 
+    console.log('Searching for groups:', this.searchTerm);
+    },
+    async sendFriendRequest(username) {
+  try {
+    const token = localStorage.getItem('token'); // replace this with your token retrieval logic
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+      params: { otherUsername: username },
     };
     const response = await axios.post('http://localhost:9090/friendship/add', null, config);
     this.message = response.data;
@@ -129,7 +136,7 @@ export default {
     this.message = error.response ? error.response.data : 'An error occurred';
   }
 },
-  async acceptFriendRequest(username) {
+async acceptFriendRequest(username) {
     try {
       const token = localStorage.getItem('token'); // replace this with your token retrieval logic
       const config = {
@@ -161,9 +168,7 @@ export default {
 </script>
 
 <style scoped>
-.blur-background {
-    filter: blur(5px);
-  }
+
 .modal {
   position: fixed;
   top: 0;
@@ -214,7 +219,7 @@ export default {
     padding: 10px 20px;
     font-size: 15px;
     color: white;
-    background-color: #3d773f;
+    background-color: #449c47;
     border: none;
     border-radius: 5px;
     cursor: pointer;
