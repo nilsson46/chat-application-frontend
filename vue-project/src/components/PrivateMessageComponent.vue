@@ -48,10 +48,11 @@ export default {
   created() {
     this.fetchFriends().then(() => {
     console.log(this.friends); // Add this line
+    
   });
   },
   computed: {
-  ...mapState(['connected','privateMessages','username']),
+  ...mapState(['connected','privateMessages','username','token']),
   filteredPrivateMessages() {
   console.log(this.privateMessages);
 
@@ -88,13 +89,17 @@ export default {
       this.selectedFriend = friend;
     },
     async fetchFriends() {
-      try {
-        const response = await axios.get('http://localhost:9090/friendship/friends');
-        this.friends = response.data;
-      } catch (error) {
-        console.error(error);
+  try {
+    const response = await axios.get('http://localhost:9090/friendship/friends', {
+      headers: {
+        'Authorization': `Bearer ${this.token}`
       }
-    },
+    });
+    this.friends = response.data;
+  } catch (error) {
+    console.error(error);
+  }
+},
   },
 };
 </script>

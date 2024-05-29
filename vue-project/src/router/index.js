@@ -36,7 +36,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const publicPages = ['/login', '/register']; // add your public routes here
+  const publicPages = ['/login', '/register','/message']; // add your public routes here
   const authRequired = !publicPages.includes(to.path);
   const loggedIn = localStorage.getItem('token'); // replace this with your token retrieval logic
 

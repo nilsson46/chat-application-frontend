@@ -65,6 +65,12 @@ export default new Vuex.Store({
     },
   },
   actions: {
+    initializeStore({ commit }) {
+      const token = localStorage.getItem('token');
+      if (token===null) {
+        commit('SET_TOKEN', token);
+      }
+    },
     login({ commit, dispatch }, { username, token }) {
       commit('SET_USERNAME', username);
       commit('SET_TOKEN', token);
@@ -72,12 +78,6 @@ export default new Vuex.Store({
     },
     logout({ commit }) {
       commit('RESET_STATE');
-    },
-    initializeStore({ commit }) {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        commit('SET_TOKEN', token);
-      }
     },
     showErrorMessage({ commit }, errorMessage) {
       commit('SET_ERROR_MESSAGE', errorMessage);
@@ -149,20 +149,14 @@ export default new Vuex.Store({
       state.client.publish({ destination: '/ws/chat/sendMessage', body: JSON.stringify(message) });
       console.log('Sent public message:', message);
     },
-   async sendPrivateMessage({ commit, state, dispatch }, { recipientUsername, privateMessageContent }) {
+    sendPrivateMessage({ commit, state, dispatch }, { recipientUsername, privateMessageContent }) {
       if (!state.connected) {
         console.error('You are not connected to the WebSocket server');
         return;
       }
-    
-      // Get the list of friends of the sender
-      const response = await axios.get(`${state.socketUrl}/friendship/friends`);
-      console.log('Friends list:', response.data); // Add this line
-      console.log('Recipient:', recipientUsername);
-      // Check if the recipient is a friend of the sender
-      if (!response.data.includes(recipientUsername)) {
-        console.error('The recipient is not a friend of the sender');
-        dispatch('showErrorMessage', 'The recipient is not a friend of the sender')
+      if(!state.token) {
+        console.error('You are not logged in');
+        dispatch('showErrorMessage', 'You are not logged in')
         return;
       }
     

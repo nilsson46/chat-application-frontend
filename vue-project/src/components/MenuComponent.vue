@@ -105,16 +105,21 @@ export default {
     },
     async searchFriends() {
   try {
+    if (this.searchTerm.trim() === '') {
+      this.searchResults = [];
+      return;
+    }
+
     const token = localStorage.getItem('token'); // replace this with your token retrieval logic
     const config = {
       headers: { Authorization: `Bearer ${token}` },
       params: { keyword: this.searchTerm }, // pass the search term as a query parameter
-      
     };
     const searchResponse = await axios.get('http://localhost:9090/friendship/search', config);
 
     // Update the search results with the response data
-    this.searchResults = searchResponse.data;
+    // Filter out the friends and the current user from the search results
+    this.searchResults = searchResponse.data.filter(user => !this.friends.includes(user) && user !== this.username);
   } catch (error) {
     console.error(error);
   }
@@ -132,6 +137,11 @@ export default {
     };
     const response = await axios.post('http://localhost:9090/friendship/add', null, config);
     this.message = response.data;
+
+    // Remove the user from the search results
+    this.searchResults = this.searchResults.filter(user => user !== username);
+    // Add the user to the friendRequests list
+    this.friendRequests.push(username);
   } catch (error) {
     this.message = error.response ? error.response.data : 'An error occurred';
   }
