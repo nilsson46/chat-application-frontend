@@ -251,7 +251,7 @@ async acceptFriendRequest(username) {
   justify-content: space-between;
   align-items: center;
   padding: 10px;
-  background-color: #e1e1e1;
+  background-color: #3479b5;
   border-radius: 5px;
   margin: 5px 0;
 }
@@ -266,7 +266,7 @@ async acceptFriendRequest(username) {
 .friends-list li,
 .friend-requests li {
   padding: 10px;
-  background-color: #e1e1e1;
+  background-color: #3479b5;
   border-radius: 5px;
   margin: 5px 0;
 }

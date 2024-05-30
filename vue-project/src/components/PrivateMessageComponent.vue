@@ -12,7 +12,7 @@
       <h2>Chat with {{ selectedFriend }}</h2>
 
       <!-- Input field for the message content -->
-      <input v-model="privateMessageContent" type="text" placeholder="Skriv ditt meddelande här" class="input-field">
+      <input v-model="privateMessageContent" type="text" placeholder="Meddelande" class="input-field">
       <button class="button" @click="sendPrivateMessage">Skicka</button>
       <p v-if="imputErrorMessage" class="error">{{ imputErrorMessage }}</p>
       <div class="chat">
@@ -108,7 +108,7 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 10px;
-  background-color: #a3abd9;
+  background-color: #222c46; /* Ljusgrå huvudbakgrund */
 }
 
 @media (min-width: 768px) {
@@ -121,16 +121,18 @@ export default {
   display: flex;
   flex-direction: column;
   padding: 10px;
-  background-color: #6b8fc5;
+  background-color: #222c46; /* Ljusare grå för vänlistan */
 }
 
 .friend {
   display: flex;
   align-items: center;
   padding: 10px;
-  background-color: #714444;
+  background-color: #4a90e2; /* Grå för vänrad */
   margin-bottom: 10px;
   cursor: pointer;
+  color: white;
+  border-radius: 5px;
 }
 
 .friend span {
@@ -138,13 +140,13 @@ export default {
 }
 
 .friend:hover {
-  background-color: #9abad4;
+  background-color: #0056b3; /* Ljusare grå för vänrad vid hovring */
 }
 
 .chat {
   width: 100%;
   padding: 10px;
-  height: 500px; /* Adjust this value as needed */
+  height: 500px; /* Justera detta värde vid behov */
   overflow-y: auto;
 }
 
@@ -155,10 +157,11 @@ export default {
 }
 
 .messages {
-  background-color: #9aa0cb;
+  background-color: #648ef1; /* Ljusare grå för meddelanden */
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 5px;
+  color: white;
 }
 
 .messages strong {
@@ -167,7 +170,7 @@ export default {
 }
 
 .input-field {
-  width: 100%;
+  width: calc(100% - 100px); /* Justera bredden för att rymma knappen */
   padding: 10px;
   margin: 10px 0;
   box-sizing: border-box;
@@ -175,19 +178,20 @@ export default {
 
 .button {
   padding: 10px 20px;
-  background-color: #007bff;
+  background-color: #007bff; /* Blå för knappar */
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
   transition: background-color 0.3s ease;
+  margin-left: 10px;
 }
 
 .button:hover {
-  background-color: #0056b3;
+  background-color: #0056b3; /* Mörkare blå för knappar vid hovring */
 }
 
 .error {
-  color: red;
+  color: #d9534f; /* Röd för felmeddelanden */
 }
 </style>

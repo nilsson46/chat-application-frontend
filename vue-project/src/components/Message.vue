@@ -64,7 +64,7 @@ export default {
 
 .messages {
     margin-top: 20px;
-    background-color: #b54646;
+    background-color: #357ab8;
     padding: 10px;
     border-radius: 5px;
 }
