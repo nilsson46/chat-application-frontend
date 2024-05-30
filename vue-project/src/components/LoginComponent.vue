@@ -1,16 +1,15 @@
 <template>
     <div>
-        <h1>Login</h1>
-        <form @submit.prevent="loginUser">
-            <div>
+        <form @submit.prevent="loginUser" class="login-form">
+            <div class="form-group">
                 <label for="username">Username:</label>
-                <input v-model="username" type="text" id="username" name="username">
+                <input v-model="username" type="text" id="username" name="username" class="input-field">
             </div>
-            <div>
+            <div class="form-group">
                 <label for="password">Password:</label>
-                <input v-model="password" type="password" id="password" name="password">
+                <input v-model="password" type="password" id="password" name="password" class="input-field">
             </div>
-            <button type="submit">Login</button>
+            <button type="submit" class="button">Login</button>
         </form>
     </div>
 </template>
@@ -75,3 +74,34 @@ export default {
     }
 };
 </script>
+<style scoped>
+.login-form {
+  max-width: 400px;
+  margin: auto;
+}
+
+.form-group {
+  margin-bottom: 1rem;
+}
+
+.input-field {
+  padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.button {
+  padding: 10px 20px;
+  font-size: 15px;
+  color: white;
+  background-color: #357ab8;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.button:hover {
+  background-color: #285a8c;
+}
+</style>

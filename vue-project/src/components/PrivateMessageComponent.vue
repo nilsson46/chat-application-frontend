@@ -1,9 +1,8 @@
 <template>
   <div class="navigation">
-
     <div class="friends-list">
-      <div v-for="friend in friends" :key="friend" class="friend">
-        <span @click="selectFriend(friend)">{{ friend }}</span>
+      <div v-for="friend in friends" :key="friend" class="friend" @click="selectFriend(friend)">
+        <span>{{ friend }}</span>
       </div>
     </div>
 
@@ -13,22 +12,22 @@
       <h2>Chat with {{ selectedFriend }}</h2>
 
       <!-- Input field for the message content -->
-      <input v-model="privateMessageContent" type="text" placeholder="Skriv ditt meddelande här">
+      <input v-model="privateMessageContent" type="text" placeholder="Skriv ditt meddelande här" class="input-field">
       <button class="button" @click="sendPrivateMessage">Skicka</button>
       <p v-if="imputErrorMessage" class="error">{{ imputErrorMessage }}</p>
       <div class="chat">
-      <!-- Display messages -->
-      <div class="messages" v-for="message in filteredPrivateMessages" :key="message.id">
-        <div>
-          <strong>{{ message.sender }} {{ message.timestamp }}</strong>
-        </div>
-        <div>
-          {{ message.content }}
+        <!-- Display messages -->
+        <div class="messages" v-for="message in filteredPrivateMessages" :key="message.id">
+          <div>
+            <strong>{{ message.sender }} {{ message.timestamp }}</strong>
+          </div>
+          <div>
+            {{ message.content }}
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 </template>
 
 <script>
@@ -105,28 +104,11 @@ export default {
 </script>
 
 <style scoped>
-
-.friends-list {
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-  background-color: #3a2e2e;
-}
-.friend{
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  background-color: #714444;
-  margin-bottom: 10px;
-  cursor: pointer;
-}
-
 .navigation {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   padding: 10px;
-  background-color: #3a2e2e;
+  background-color: #a3abd9;
 }
 
 @media (min-width: 768px) {
@@ -135,13 +117,28 @@ export default {
   }
 }
 
-.friend:hover {
-  background-color: #c99595;
+.friends-list {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  background-color: #6b8fc5;
 }
 
-.friend button {
-  margin-right: 10px;
-  
+.friend {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #714444;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.friend span {
+  cursor: pointer;
+}
+
+.friend:hover {
+  background-color: #9abad4;
 }
 
 .chat {
@@ -157,8 +154,8 @@ export default {
   }
 }
 
-.chat .messages {
-  background-color: #714444;
+.messages {
+  background-color: #9aa0cb;
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 5px;
@@ -169,7 +166,7 @@ export default {
   margin-bottom: 5px;
 }
 
-input[type="text"] {
+.input-field {
   width: 100%;
   padding: 10px;
   margin: 10px 0;
@@ -183,6 +180,7 @@ input[type="text"] {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
 .button:hover {

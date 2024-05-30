@@ -1,30 +1,26 @@
 <template>
-  <div :class="{ 'blur-background': showModal }">
-    <h1>Menu</h1>
-    <div>
-      <div class="buttons">
-        <button @click="openModal('friends')">Open Friends Modal</button>
-        <button @click="openModal('groups')">Open Groups Modal</button>
+  <div>
+    <div :class="{ 'blur-background': showModal }">
+      <div>
+        <div class="buttons">
+          <button class="button" @click="openModal('friends')">Open Friends Modal</button>
+          <button class="button" @click="openModal('groups')">Open Groups Modal</button>
+        </div>
       </div>
     </div>
 
     <div class="modal" v-if="showModal">
+      <div class="modal-backdrop" @click="closeModal"></div>
       <div class="modal-content">
         <h2>Modal Window</h2>
-        <input class="inputField" type="text" v-model="searchTerm" :placeholder="placeholderText" @input="search">
-        
+        <input class="input-field" type="text" v-model="searchTerm" :placeholder="placeholderText" @input="search" />
 
-        <!-- Moved friend request related elements here -->
         <div v-if="searchType === 'friends'">
-          <!-- Removed the old input field and button -->
-        
-          <!-- Dropdown list of search results -->
           <div v-if="searchResults.length > 0">
-            <ul>
-              <li v-for="result in searchResults" :key="result">
+            <ul class="search-results">
+              <li v-for="result in searchResults" :key="result" class="search-result">
                 {{ result }}
-                <!-- Added a button next to each result -->
-                <button @click="sendFriendRequest(result)">Send Friend Request</button>
+                <button class="button" @click="sendFriendRequest(result)">Send Friend Request</button>
               </li>
             </ul>
           </div>
@@ -32,22 +28,21 @@
 
         <div>
           <h2>Friends</h2>
-          <ul>
+          <ul class="friends-list">
             <li v-for="friend in friends" :key="friend">{{ friend }}</li>
           </ul>
       
           <h2>Friend Requests</h2>
-          <ul>
+          <ul class="friend-requests">
             <li v-for="request in friendRequests" :key="request">
-            {{ request }}
-            <button @click="acceptFriendRequest(request)">Accept</button>
-            <button @click="declineFriendRequest(request)">Decline</button>
-          </li>
+              {{ request }}
+              <button class="button" @click="acceptFriendRequest(request)">Accept</button>
+              <button class="button" @click="declineFriendRequest(request)">Decline</button>
+            </li>
           </ul>
         </div>
-        <button @click="closeModal">Close</button>
+        <button class="button" @click="closeModal">Close</button>
       </div>
-      
     </div>
   </div>
 </template>
@@ -178,6 +173,9 @@ async acceptFriendRequest(username) {
 </script>
 
 <style scoped>
+.blur-background {
+  filter: blur(5px);
+}
 
 .modal {
   position: fixed;
@@ -197,46 +195,79 @@ async acceptFriendRequest(username) {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(125, 64, 64, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(5px);
 }
 
 .modal-content {
+  position: relative;
   padding: 20px;
-  background-color: rgba(114, 125, 114, 0.8); /* Green background */
-  color: white; /* White text */
-  border-radius: 5px; /* Rounded corners */
-  width: 50%; /* Half of the parent's width */
-  max-width: 500px; /* Maximum width */
-  box-sizing: border-box; /* Include padding and border in element's total width and height */
+  background-color: #4a90e2; /* Blå bakgrund */
+  color: white; /* Vit text */
+  border-radius: 8px; /* Rundade hörn */
+  width: 50%; /* Halva bredden av föräldern */
+  max-width: 500px; /* Maximal bredd */
+  box-sizing: border-box; /* Inkludera padding och border i elementets totala bredd och höjd */
 }
 
-.inputField {
+.input-field {
   padding: 10px;
   margin: 10px 0;
   width: 100%;
   box-sizing: border-box;
 }
+
 .buttons {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
 }
 
-.buttons button {
-    padding: 10px 20px;
-    font-size: 15px;
-    color: white;
-    background-color: #449c47;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+.button {
+  margin: 15px 0;
+  padding: 10px 20px;
+  font-size: 15px;
+  color: white;
+  background-color: #357ab8;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.buttons button:hover {
-    background-color: #1e9221;
+.button:hover {
+  background-color: #285a8c;
+}
+
+.search-results {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.search-result {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #e1e1e1;
+  border-radius: 5px;
+  margin: 5px 0;
+}
+
+.friends-list,
+.friend-requests {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.friends-list li,
+.friend-requests li {
+  padding: 10px;
+  background-color: #e1e1e1;
+  border-radius: 5px;
+  margin: 5px 0;
 }
 </style>

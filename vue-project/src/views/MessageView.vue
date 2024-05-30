@@ -10,21 +10,20 @@ const toggleChat = () => {
 </script>
 
 
-
 <template>
   <div class="about">
     <NavBar/>
-    <button @click="toggleChat">{{ showPrivateMessage ? 'Switch to Public Chat' : 'Switch to Private Chat' }}</button>
+    <button @click="toggleChat" class="toggle-button">{{ showPrivateMessage ? 'Switch to Public Chat' : 'Switch to Private Chat' }}</button>
     <Message v-if="!showPrivateMessage" />
     <PrivateMessage v-if="showPrivateMessage" />
   </div>
-</template> 
+</template>
 
 <style> 
-button {
+button.toggle-button {
   margin: 10px;
   padding: 10px;
-  background-color: #4CAF50;
+  background-color: #4a90e2;
   color: white;
   border: none;
   border-radius: 5px;
@@ -36,5 +35,9 @@ button {
   text-align: center;
   text-transform: uppercase;
   transition: background-color 0.3s;
+}
+
+button.toggle-button:hover {
+  background-color: #3669b8;
 }
 </style>
