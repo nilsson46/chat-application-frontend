@@ -1,9 +1,8 @@
 <template>
   <div class="navigation">
-
     <div class="friends-list">
-      <div v-for="friend in friends" :key="friend" class="friend">
-        <span @click="selectFriend(friend)">{{ friend }}</span>
+      <div v-for="friend in friends" :key="friend" class="friend" @click="selectFriend(friend)">
+        <span>{{ friend }}</span>
       </div>
     </div>
 
@@ -13,22 +12,22 @@
       <h2>Chat with {{ selectedFriend }}</h2>
 
       <!-- Input field for the message content -->
-      <input v-model="privateMessageContent" type="text" placeholder="Skriv ditt meddelande här">
+      <input v-model="privateMessageContent" type="text" placeholder="Meddelande" class="input-field">
       <button class="button" @click="sendPrivateMessage">Skicka</button>
       <p v-if="imputErrorMessage" class="error">{{ imputErrorMessage }}</p>
       <div class="chat">
-      <!-- Display messages -->
-      <div class="messages" v-for="message in filteredPrivateMessages" :key="message.id">
-        <div>
-          <strong>{{ message.sender }} {{ message.timestamp }}</strong>
-        </div>
-        <div>
-          {{ message.content }}
+        <!-- Display messages -->
+        <div class="messages" v-for="message in filteredPrivateMessages" :key="message.id">
+          <div>
+            <strong>{{ message.sender }} {{ message.timestamp }}</strong>
+          </div>
+          <div>
+            {{ message.content }}
+          </div>
         </div>
       </div>
     </div>
   </div>
-</div>
 </template>
 
 <script>
@@ -48,10 +47,11 @@ export default {
   created() {
     this.fetchFriends().then(() => {
     console.log(this.friends); // Add this line
+    
   });
   },
   computed: {
-  ...mapState(['connected','privateMessages','username']),
+  ...mapState(['connected','privateMessages','username','token']),
   filteredPrivateMessages() {
   console.log(this.privateMessages);
 
@@ -88,40 +88,27 @@ export default {
       this.selectedFriend = friend;
     },
     async fetchFriends() {
-      try {
-        const response = await axios.get('http://localhost:9090/friendship/friends');
-        this.friends = response.data;
-      } catch (error) {
-        console.error(error);
+  try {
+    const response = await axios.get('http://localhost:9090/friendship/friends', {
+      headers: {
+        'Authorization': `Bearer ${this.token}`
       }
-    },
+    });
+    this.friends = response.data;
+  } catch (error) {
+    console.error(error);
+  }
+},
   },
 };
 </script>
 
 <style scoped>
-
-.friends-list {
-  display: flex;
-  flex-direction: column;
-  padding: 10px;
-  background-color: #3a2e2e;
-}
-.friend{
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  background-color: #714444;
-  margin-bottom: 10px;
-  cursor: pointer;
-}
-
 .navigation {
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   padding: 10px;
-  background-color: #3a2e2e;
+  background-color: #222c46; /* Ljusgrå huvudbakgrund */
 }
 
 @media (min-width: 768px) {
@@ -130,19 +117,36 @@ export default {
   }
 }
 
-.friend:hover {
-  background-color: #c99595;
+.friends-list {
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  background-color: #222c46; /* Ljusare grå för vänlistan */
 }
 
-.friend button {
-  margin-right: 10px;
-  
+.friend {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  background-color: #4a90e2; /* Grå för vänrad */
+  margin-bottom: 10px;
+  cursor: pointer;
+  color: white;
+  border-radius: 5px;
+}
+
+.friend span {
+  cursor: pointer;
+}
+
+.friend:hover {
+  background-color: #0056b3; /* Ljusare grå för vänrad vid hovring */
 }
 
 .chat {
   width: 100%;
   padding: 10px;
-  height: 500px; /* Adjust this value as needed */
+  height: 500px; /* Justera detta värde vid behov */
   overflow-y: auto;
 }
 
@@ -152,11 +156,12 @@ export default {
   }
 }
 
-.chat .messages {
-  background-color: #714444;
+.messages {
+  background-color: #648ef1; /* Ljusare grå för meddelanden */
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 5px;
+  color: white;
 }
 
 .messages strong {
@@ -164,8 +169,8 @@ export default {
   margin-bottom: 5px;
 }
 
-input[type="text"] {
-  width: 100%;
+.input-field {
+  width: calc(100% - 100px); /* Justera bredden för att rymma knappen */
   padding: 10px;
   margin: 10px 0;
   box-sizing: border-box;
@@ -173,18 +178,20 @@ input[type="text"] {
 
 .button {
   padding: 10px 20px;
-  background-color: #007bff;
+  background-color: #007bff; /* Blå för knappar */
   color: white;
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-left: 10px;
 }
 
 .button:hover {
-  background-color: #0056b3;
+  background-color: #0056b3; /* Mörkare blå för knappar vid hovring */
 }
 
 .error {
-  color: red;
+  color: #d9534f; /* Röd för felmeddelanden */
 }
 </style>

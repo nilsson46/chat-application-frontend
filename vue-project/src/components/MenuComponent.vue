@@ -1,62 +1,51 @@
 <template>
-  <div :class="{ 'blur-background': showModal }">
-    <!--<div v-if="$store.state.isLoggedIn">
-      Loggad
-    </div>-->
-    <h1>Menu</h1>
-    <div>
+  <div>
+    <div :class="{ 'blur-background': showModal }">
       <div>
-        Get friends List of friends maybe open chat or something? 
-      </div>
-      <div>
-        get groups List of groups open the group chat?`
-      </div>
-      <div>
-        <button>Create a group`?</button>
-      </div>
-      <!--<div v-else>
-        Logga in eller registrera dig för att använda appen
-      </div>-->
-      <div class="buttons">
-        <button @click="openModal('friends')">Open Friends Modal</button>
-        <button @click="openModal('groups')">Open Groups Modal</button>
+        <div class="buttons">
+          <button class="button" @click="openModal('friends')">Open Friends Modal</button>
+          <button class="button" @click="openModal('groups')">Open Groups Modal</button>
         </div>
+      </div>
     </div>
-  </div>
+
+    <div class="modal" v-if="showModal">
+      <div class="modal-backdrop" @click="closeModal"></div>
+      <div class="modal-content">
+        <h2>Modal Window</h2>
+        <input class="input-field" type="text" v-model="searchTerm" :placeholder="placeholderText" @input="search" />
+
+        <div v-if="searchType === 'friends'">
+          <div v-if="searchResults.length > 0">
+            <ul class="search-results">
+              <li v-for="result in searchResults" :key="result" class="search-result">
+                {{ result }}
+                <button class="button" @click="sendFriendRequest(result)">Send Friend Request</button>
+              </li>
+            </ul>
+          </div>
+        </div>
 
         <div>
-            
-            <div class="modal" v-if="showModal">
-                <div class="modal-content">
-                    <!-- Content of the modal window -->
-                    <h2>Modal Window</h2>
-                    <input class="inputField" type="text" v-model="searchTerm" :placeholder="placeholderText" @input="search">
-                    <p>the get request should be done every search i guess?</p>
-                    <button @click="closeModal">Close</button>
-                </div>
-            </div>
-        </div>
-        <div>
-          <input v-model="username" type="text" placeholder="Enter username">
-          <button @click="sendFriendRequest">Send Friend Request</button>
-          <p v-if="message">{{ message }}</p>
-        </div>
-        <div>
           <h2>Friends</h2>
-          <ul>
+          <ul class="friends-list">
             <li v-for="friend in friends" :key="friend">{{ friend }}</li>
           </ul>
       
           <h2>Friend Requests</h2>
-          <ul>
+          <ul class="friend-requests">
             <li v-for="request in friendRequests" :key="request">
               {{ request }}
-              <button @click="acceptFriendRequest(request)">Accept</button>
-              <button @click="declineFriendRequest(request)">Decline</button>
+              <button class="button" @click="acceptFriendRequest(request)">Accept</button>
+              <button class="button" @click="declineFriendRequest(request)">Decline</button>
             </li>
           </ul>
         </div>
-    </template>
+        <button class="button" @click="closeModal">Close</button>
+      </div>
+    </div>
+  </div>
+</template>
 
 <script>
 import axios from 'axios';
@@ -70,6 +59,7 @@ export default {
             message: '',
             friends: [],
             friendRequests: [],
+            searchResults: [],
         };
     },
     computed: {
@@ -108,28 +98,50 @@ export default {
         this.searchGroups();
       }
     },
-    searchFriends() {
-    // Implement your search for friends logic here and a list to shown? 
-        console.log('Searching for friends:', this.searchTerm);
-    },
+    async searchFriends() {
+  try {
+    if (this.searchTerm.trim() === '') {
+      this.searchResults = [];
+      return;
+    }
+
+    const token = localStorage.getItem('token'); // replace this with your token retrieval logic
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+      params: { keyword: this.searchTerm }, // pass the search term as a query parameter
+    };
+    const searchResponse = await axios.get('http://localhost:9090/friendship/search', config);
+
+    // Update the search results with the response data
+    // Filter out the friends and the current user from the search results
+    this.searchResults = searchResponse.data.filter(user => !this.friends.includes(user) && user !== this.username);
+  } catch (error) {
+    console.error(error);
+  }
+},
     searchGroups() {
         // Implement your search for groups logic here and a list to shown? 
     console.log('Searching for groups:', this.searchTerm);
     },
-    async sendFriendRequest() {
+    async sendFriendRequest(username) {
   try {
     const token = localStorage.getItem('token'); // replace this with your token retrieval logic
     const config = {
       headers: { Authorization: `Bearer ${token}` },
-      params: { otherUsername: this.username },
+      params: { otherUsername: username },
     };
     const response = await axios.post('http://localhost:9090/friendship/add', null, config);
     this.message = response.data;
+
+    // Remove the user from the search results
+    this.searchResults = this.searchResults.filter(user => user !== username);
+    // Add the user to the friendRequests list
+    this.friendRequests.push(username);
   } catch (error) {
     this.message = error.response ? error.response.data : 'An error occurred';
   }
 },
-  async acceptFriendRequest(username) {
+async acceptFriendRequest(username) {
     try {
       const token = localStorage.getItem('token'); // replace this with your token retrieval logic
       const config = {
@@ -162,8 +174,9 @@ export default {
 
 <style scoped>
 .blur-background {
-    filter: blur(5px);
-  }
+  filter: blur(5px);
+}
+
 .modal {
   position: fixed;
   top: 0;
@@ -182,46 +195,79 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(125, 64, 64, 0.5);
+  background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(5px);
 }
 
 .modal-content {
+  position: relative;
   padding: 20px;
-  background-color: rgba(114, 125, 114, 0.8); /* Green background */
-  color: white; /* White text */
-  border-radius: 5px; /* Rounded corners */
-  width: 50%; /* Half of the parent's width */
-  max-width: 500px; /* Maximum width */
-  box-sizing: border-box; /* Include padding and border in element's total width and height */
+  background-color: #4a90e2; /* Blå bakgrund */
+  color: white; /* Vit text */
+  border-radius: 8px; /* Rundade hörn */
+  width: 50%; /* Halva bredden av föräldern */
+  max-width: 500px; /* Maximal bredd */
+  box-sizing: border-box; /* Inkludera padding och border i elementets totala bredd och höjd */
 }
 
-.inputField {
+.input-field {
   padding: 10px;
   margin: 10px 0;
   width: 100%;
   box-sizing: border-box;
 }
+
 .buttons {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
 }
 
-.buttons button {
-    padding: 10px 20px;
-    font-size: 15px;
-    color: white;
-    background-color: #3d773f;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
+.button {
+  margin: 15px 0;
+  padding: 10px 20px;
+  font-size: 15px;
+  color: white;
+  background-color: #357ab8;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
 
-.buttons button:hover {
-    background-color: #1e9221;
+.button:hover {
+  background-color: #285a8c;
+}
+
+.search-results {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.search-result {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #3479b5;
+  border-radius: 5px;
+  margin: 5px 0;
+}
+
+.friends-list,
+.friend-requests {
+  list-style: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.friends-list li,
+.friend-requests li {
+  padding: 10px;
+  background-color: #3479b5;
+  border-radius: 5px;
+  margin: 5px 0;
 }
 </style>
