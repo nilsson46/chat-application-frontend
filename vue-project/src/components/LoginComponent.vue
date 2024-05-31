@@ -53,7 +53,7 @@ export default {
                 this.$store.commit('SET_USERNAME', this.username);
                 this.connectWebSocket();
                 this.$store.commit('SET_TOKEN', response.data.token);
-                this.$router.push('/message');
+                this.$router.push('/');
 
                 // Use the axios instance to fetch messages
                 const messagesResponse = await instance.get('/api/messages');

@@ -45,48 +45,76 @@ export default {
     };
   },
   created() {
-    this.fetchFriends().then(() => {
-    console.log(this.friends); // Add this line
-    
+  const storedMessages = localStorage.getItem('privateMessages');
+  if (storedMessages) {
+    this.privateMessages = JSON.parse(storedMessages);
+  }
+  this.fetchFriends().then(() => {
+    console.log(this.friends);
   });
-  },
+  // Listen for new messages
+  this.$store.subscribe((mutation, state) => {
+    if (mutation.type === 'addPrivateMessage') {
+      // Store the updated messages in the local storage
+      localStorage.setItem('privateMessages', JSON.stringify(state.privateMessages));
+    }
+  });
+},
   computed: {
   ...mapState(['connected','privateMessages','username','token']),
+  unreadMessagesCount() {
+    return this.privateMessages.filter(message => 
+      message.type === 'PRIVATE' && 
+      message.read === false &&
+      message.receiver === this.username
+    ).length;
+  },
   filteredPrivateMessages() {
   console.log(this.privateMessages);
 
   if (!this.selectedFriend) {
     return [];
   }
-
+  
   return this.privateMessages.filter(message => 
     message.type === 'PRIVATE' && 
     ((message.sender === this.selectedFriend && message.receiver === this.username) || 
      (message.sender === this.username && message.receiver === this.selectedFriend))
   );
 },
+
   errorMessage() {
     return this.$store.state.errorMessage;
   }
 },
-  methods: {
-    ...mapActions(['connectWebSocket']),
-    sendPrivateMessage() {
-  console.log(this.selectedFriend, this.username);
+methods: {
+  ...mapActions(['connectWebSocket']),
+  sendPrivateMessage() {
+    console.log(this.selectedFriend, this.username);
 
-  if (this.selectedFriend === '') {
-    this.imputErrorMessage = 'Recipient cannot be empty';
-  } else if (this.privateMessageContent === '') {
-    this.imputErrorMessage = 'Message cannot be empty';
-  } else {
-    this.$store.dispatch('sendPrivateMessage', { recipientUsername: this.selectedFriend, privateMessageContent: this.privateMessageContent });
-    this.privateMessageContent = '';
-    this.imputErrorMessage = '';
-  }
-},
-    selectFriend(friend) {
-      this.selectedFriend = friend;
-    },
+    if (this.selectedFriend === '') {
+      this.imputErrorMessage = 'Recipient cannot be empty';
+    } else if (this.privateMessageContent === '') {
+      this.imputErrorMessage = 'Message cannot be empty';
+    } else {
+      this.$store.dispatch('sendPrivateMessage', { recipientUsername: this.selectedFriend, privateMessageContent: this.privateMessageContent });
+      this.privateMessageContent = '';
+      this.imputErrorMessage = '';
+      // Store the messages in local storage
+      localStorage.setItem('privateMessages', JSON.stringify(this.privateMessages));
+    }
+  },
+  selectFriend(friend) {
+    this.selectedFriend = friend;
+    // Mark the messages from the selected friend as read
+    this.privateMessages.forEach(message => {
+      if (message.sender === friend && message.receiver === this.username) {
+        message.read = true;
+      }
+    });
+    // Store the updated messages in local storage
+    localStorage.setItem('privateMessages', JSON.stringify(this.privateMessages));
+  },
     async fetchFriends() {
   try {
     const response = await axios.get('http://localhost:9090/friendship/friends', {

@@ -42,6 +42,7 @@ export default new Vuex.Store({
     },
     ADD_PRIVATE_MESSAGE(state, message) {
       state.privateMessages.push(message);
+      localStorage.setItem('privateMessages', JSON.stringify(state.privateMessages));
     },
     SET_TOKEN(state, token) {
       state.token = token;
@@ -62,6 +63,14 @@ export default new Vuex.Store({
       state.privateMessages = [];
       state.token = null;
       state.isLoggedIn = false;
+    },
+  },
+  getters: {
+    privateMessages: state => state.privateMessages,
+  },
+  computed: {
+    privateMessages() {
+      return this.$store.getters.privateMessages;
     },
   },
   actions: {
