@@ -111,6 +111,7 @@ export default new Vuex.Store({
           Authorization: `Bearer ${state.token}`,
         },
         onStompError: (frame) => {
+
           console.error("Received error from server:", frame.body);
           if (frame.body.includes("Receiver not found")) {
             console.error("The recipient username does not exist");
@@ -124,6 +125,7 @@ export default new Vuex.Store({
         console.log("Connected to WebSocket server");
         commit("SET_CONNECTED", true);
 
+        // Unsubscribe from the topics before subscribing again
         if (state.publicSubscription) {
           state.publicSubscription.unsubscribe();
         }
