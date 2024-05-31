@@ -1,17 +1,17 @@
 <script>
-import { mapActions, mapState } from 'vuex';
+import { mapActions, mapState } from "vuex";
 export default {
   computed: {
     baseUrl() {
       return `${window.location.protocol}//${window.location.host}`;
     },
-    ...mapState(['username']),
+    ...mapState(["username"]),
   },
   methods: {
-    ...mapActions(['logout']),
+    ...mapActions(["logout"]),
     async handleLogout() {
       await this.logout();
-      this.$router.push('/login');
+      this.$router.push("/login");
     },
   },
 };
@@ -19,11 +19,17 @@ export default {
 <template>
   <div class="navbar">
     <a class="navbar-button" :href="`${baseUrl}/`">Home</a>
-    <a class="navbar-button" v-if="!username" :href="`${baseUrl}/login`">Login</a>
-    <a class="navbar-button" v-if="!username" :href="`${baseUrl}/register`">Register</a>
+    <a class="navbar-button" v-if="!username" :href="`${baseUrl}/login`"
+      >Login</a
+    >
+    <a class="navbar-button" v-if="!username" :href="`${baseUrl}/register`"
+      >Register</a
+    >
     <a class="navbar-button" :href="`${baseUrl}/message`">Message</a>
     <button class="navbar-button" @click="handleLogout">Logout</button>
-    <div v-if="username" class="username-display">Logged in as: {{ username }}</div>
+    <div v-if="username" class="username-display">
+      Logged in as: {{ username }}
+    </div>
   </div>
 </template>
 
