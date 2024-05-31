@@ -31,12 +31,10 @@ const router = createRouter({
 })
 
 router.beforeEach((to, from, next) => {
-  const publicPages = ['/login', '/register','/message']; // add your public routes here
+  const publicPages = ['/login', '/register','/message'];
   const authRequired = !publicPages.includes(to.path);
-  const loggedIn = localStorage.getItem('token'); // replace this with your token retrieval logic
+  const loggedIn = localStorage.getItem('token'); 
 
-  // trying to access a restricted page + not logged in
-  // redirect to login page
   if (authRequired && !loggedIn) {
     next('/login');
   } else {
