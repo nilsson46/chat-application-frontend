@@ -1,23 +1,33 @@
 <template>
   <div class="navigation">
     <div class="friends-list">
-      <div v-for="friend in friends" :key="friend" class="friend" @click="selectFriend(friend)">
+      <div
+        v-for="friend in friends"
+        :key="friend"
+        class="friend"
+        @click="selectFriend(friend)"
+      >
         <span>{{ friend }}</span>
       </div>
     </div>
 
-    <!-- Chat area -->
     <div v-if="selectedFriend">
-      <!-- Display selected friend's name -->
       <h2>Chat with {{ selectedFriend }}</h2>
 
-      <!-- Input field for the message content -->
-      <input v-model="privateMessageContent" type="text" placeholder="Meddelande" class="input-field">
+      <input
+        v-model="privateMessageContent"
+        type="text"
+        placeholder="Meddelande"
+        class="input-field"
+      />
       <button class="button" @click="sendPrivateMessage">Skicka</button>
       <p v-if="imputErrorMessage" class="error">{{ imputErrorMessage }}</p>
       <div class="chat">
-        <!-- Display messages -->
-        <div class="messages" v-for="message in filteredPrivateMessages" :key="message.id">
+        <div
+          class="messages"
+          v-for="message in filteredPrivateMessages"
+          :key="message.id"
+        >
           <div>
             <strong>{{ message.sender }} {{ message.timestamp }}</strong>
           </div>
@@ -31,102 +41,120 @@
 </template>
 
 <script>
-import axios from 'axios';
-import { mapState, mapActions } from 'vuex';
+import axios from "axios";
+import { mapState, mapActions } from "vuex";
 
 export default {
   data() {
     return {
-      privateMessageContent: '',
-      recipientUsername: '',
-      imputErrorMessage: '',
+      privateMessageContent: "",
+      recipientUsername: "",
+      imputErrorMessage: "",
       selectedFriend: null,
       friends: [],
     };
   },
   created() {
-  const storedMessages = localStorage.getItem('privateMessages');
-  if (storedMessages) {
-    this.privateMessages = JSON.parse(storedMessages);
-  }
-  this.fetchFriends().then(() => {
-    console.log(this.friends);
-  });
-  // Listen for new messages
-  this.$store.subscribe((mutation, state) => {
-    if (mutation.type === 'addPrivateMessage') {
-      // Store the updated messages in the local storage
-      localStorage.setItem('privateMessages', JSON.stringify(state.privateMessages));
+    const storedMessages = localStorage.getItem("privateMessages");
+    if (storedMessages) {
+      this.privateMessages = JSON.parse(storedMessages);
     }
-  });
-},
+    this.fetchFriends().then(() => {
+      console.log(this.friends);
+    });
+
+    this.$store.subscribe((mutation, state) => {
+      if (mutation.type === "addPrivateMessage") {
+        localStorage.setItem(
+          "privateMessages",
+          JSON.stringify(state.privateMessages)
+        );
+      }
+    });
+  },
   computed: {
-  ...mapState(['connected','privateMessages','username','token']),
-  unreadMessagesCount() {
-    return this.privateMessages.filter(message => 
-      message.type === 'PRIVATE' && 
-      message.read === false &&
-      message.receiver === this.username
-    ).length;
-  },
-  filteredPrivateMessages() {
-  console.log(this.privateMessages);
+    ...mapState(["connected", "privateMessages", "username", "token"]),
+    unreadMessagesCount() {
+      return this.privateMessages.filter(
+        (message) =>
+          message.type === "PRIVATE" &&
+          message.read === false &&
+          message.receiver === this.username
+      ).length;
+    },
+    filteredPrivateMessages() {
+      console.log(this.privateMessages);
 
-  if (!this.selectedFriend) {
-    return [];
-  }
-  
-  return this.privateMessages.filter(message => 
-    message.type === 'PRIVATE' && 
-    ((message.sender === this.selectedFriend && message.receiver === this.username) || 
-     (message.sender === this.username && message.receiver === this.selectedFriend))
-  );
-},
-
-  errorMessage() {
-    return this.$store.state.errorMessage;
-  }
-},
-methods: {
-  ...mapActions(['connectWebSocket']),
-  sendPrivateMessage() {
-    console.log(this.selectedFriend, this.username);
-
-    if (this.selectedFriend === '') {
-      this.imputErrorMessage = 'Recipient cannot be empty';
-    } else if (this.privateMessageContent === '') {
-      this.imputErrorMessage = 'Message cannot be empty';
-    } else {
-      this.$store.dispatch('sendPrivateMessage', { recipientUsername: this.selectedFriend, privateMessageContent: this.privateMessageContent });
-      this.privateMessageContent = '';
-      this.imputErrorMessage = '';
-      // Store the messages in local storage
-      localStorage.setItem('privateMessages', JSON.stringify(this.privateMessages));
-    }
-  },
-  selectFriend(friend) {
-    this.selectedFriend = friend;
-    // Mark the messages from the selected friend as read
-    this.privateMessages.forEach(message => {
-      if (message.sender === friend && message.receiver === this.username) {
-        message.read = true;
+      if (!this.selectedFriend) {
+        return [];
       }
-    });
-    // Store the updated messages in local storage
-    localStorage.setItem('privateMessages', JSON.stringify(this.privateMessages));
+
+      return this.privateMessages.filter(
+        (message) =>
+          message.type === "PRIVATE" &&
+          ((message.sender === this.selectedFriend &&
+            message.receiver === this.username) ||
+            (message.sender === this.username &&
+              message.receiver === this.selectedFriend))
+      );
+    },
+
+    errorMessage() {
+      return this.$store.state.errorMessage;
+    },
   },
+  methods: {
+    ...mapActions(["connectWebSocket"]),
+    sendPrivateMessage() {
+      console.log(this.selectedFriend, this.username);
+
+      if (this.selectedFriend === "") {
+        this.imputErrorMessage = "Recipient cannot be empty";
+      } else if (this.privateMessageContent === "") {
+        this.imputErrorMessage = "Message cannot be empty";
+      } else {
+        this.$store.dispatch("sendPrivateMessage", {
+          recipientUsername: this.selectedFriend,
+          privateMessageContent: this.privateMessageContent,
+        });
+        this.privateMessageContent = "";
+        this.imputErrorMessage = "";
+
+        localStorage.setItem(
+          "privateMessages",
+          JSON.stringify(this.privateMessages)
+        );
+      }
+    },
+    selectFriend(friend) {
+      this.selectedFriend = friend;
+
+      this.privateMessages.forEach((message) => {
+        if (message.sender === friend && message.receiver === this.username) {
+          message.read = true;
+        }
+      });
+
+      localStorage.setItem(
+        "privateMessages",
+        JSON.stringify(this.privateMessages)
+      );
+    },
     async fetchFriends() {
-  try {
-    const response = await axios.get('http://localhost:9090/friendship/friends', {
-      headers: {
-        'Authorization': `Bearer ${this.token}`
+      try {
+        const response = await axios.get(
+          "http://localhost:9090/friendship/friends",
+          {
+            headers: {
+              Authorization: `Bearer ${this.token}`,
+            },
+          }
+        );
+        this.friends = response.data;
+      } catch (error) {
+        console.error(error);
       }
-    });
-    this.friends = response.data;
-  } catch (error) {
-    console.error(error);
-  }
-},
+    },
   },
 };
 </script>
@@ -136,7 +164,7 @@ methods: {
   display: flex;
   flex-direction: column;
   padding: 10px;
-  background-color: #222c46; /* Ljusgrå huvudbakgrund */
+  background-color: #222c46;
 }
 
 @media (min-width: 768px) {
@@ -149,14 +177,14 @@ methods: {
   display: flex;
   flex-direction: column;
   padding: 10px;
-  background-color: #222c46; /* Ljusare grå för vänlistan */
+  background-color: #222c46;
 }
 
 .friend {
   display: flex;
   align-items: center;
   padding: 10px;
-  background-color: #4a90e2; /* Grå för vänrad */
+  background-color: #4a90e2;
   margin-bottom: 10px;
   cursor: pointer;
   color: white;
@@ -168,13 +196,13 @@ methods: {
 }
 
 .friend:hover {
-  background-color: #0056b3; /* Ljusare grå för vänrad vid hovring */
+  background-color: #0056b3;
 }
 
 .chat {
   width: 100%;
   padding: 10px;
-  height: 500px; /* Justera detta värde vid behov */
+  height: 500px;
   overflow-y: auto;
 }
 
@@ -185,7 +213,7 @@ methods: {
 }
 
 .messages {
-  background-color: #648ef1; /* Ljusare grå för meddelanden */
+  background-color: #648ef1;
   padding: 10px;
   margin-bottom: 10px;
   border-radius: 5px;
@@ -198,7 +226,7 @@ methods: {
 }
 
 .input-field {
-  width: calc(100% - 100px); /* Justera bredden för att rymma knappen */
+  width: calc(100% - 100px);
   padding: 10px;
   margin: 10px 0;
   box-sizing: border-box;
@@ -206,7 +234,7 @@ methods: {
 
 .button {
   padding: 10px 20px;
-  background-color: #007bff; /* Blå för knappar */
+  background-color: #007bff;
   color: white;
   border: none;
   border-radius: 5px;
@@ -216,10 +244,10 @@ methods: {
 }
 
 .button:hover {
-  background-color: #0056b3; /* Mörkare blå för knappar vid hovring */
+  background-color: #0056b3;
 }
 
 .error {
-  color: #d9534f; /* Röd för felmeddelanden */
+  color: #d9534f;
 }
 </style>
