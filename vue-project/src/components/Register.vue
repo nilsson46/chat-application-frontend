@@ -67,7 +67,7 @@ export default {
                 country: this.country
             })
             .then(response => {
-                // Handle the response from the server
+
                 console.log(response.data);
                 localStorage.setItem('token', response.data.token);
                 this.$store.commit('SET_TOKEN', response.data.token);
@@ -75,7 +75,7 @@ export default {
                 this.$router.push('/login');
             })
             .catch(error => {
-                // Handle the error
+
                 console.log(error);
             });
         }

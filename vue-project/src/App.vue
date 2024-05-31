@@ -1,7 +1,6 @@
 <script setup>
 import { RouterLink, RouterView } from 'vue-router'
-import HelloWorld from './components/HelloWorld.vue'
-import WebSocketComponent from './components/WebSocketComponent.vue'
+
 
 </script>
 
@@ -9,9 +8,5 @@ import WebSocketComponent from './components/WebSocketComponent.vue'
   <div>
     <RouterView />
   </div>
-
-  
 </template>
 
-<style scoped>
-</style>

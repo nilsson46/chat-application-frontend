@@ -10,7 +10,6 @@
   
   <script>
   import { mapState, mapActions } from 'vuex';
-  //import {Client} from '@stomp/stompjs'
   export default {
     data() {
       return {
@@ -27,16 +26,16 @@
     },
     methods: {
       connectWebSocket() {
-        // Establish WebSocket connection
+
         this.socket = new WebSocket(`http://localhost:9090/connect`,'echo-protocol');
   
-        // WebSocket event handlers
+
         this.socket.onopen = () => {
           console.log('Connected to WebSocket');
         };
   
         this.socket.onmessage = (event) => {
-          // Handle incoming WebSocket messages
+
           console.log('Received message:', event.data);
           this.messages.push({ id: this.messages.length, content: event.data });
         };
@@ -50,16 +49,13 @@
         };
       },
       sendMessage() {
-        // Send message through WebSocket
+
         this.socket.send(this.message);
         console.log('Message sent:', this.message);
-        this.message = ''; // Clear input field after sending message
+        this.message = '';
       }
     }
   };
   </script>
-  
-  <style scoped>
-  /* Add your component-specific styles here if needed */
-  </style>
+
   

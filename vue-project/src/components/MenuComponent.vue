@@ -69,7 +69,7 @@ export default {
     },
     async created() {
       try {
-        const token = localStorage.getItem('token'); // replace this with your token retrieval logic
+        const token = localStorage.getItem('token'); 
         const config = {
           headers: { Authorization: `Bearer ${token}` },
         };
@@ -105,27 +105,25 @@ export default {
       return;
     }
 
-    const token = localStorage.getItem('token'); // replace this with your token retrieval logic
+    const token = localStorage.getItem('token'); 
     const config = {
       headers: { Authorization: `Bearer ${token}` },
-      params: { keyword: this.searchTerm }, // pass the search term as a query parameter
+      params: { keyword: this.searchTerm }, 
     };
     const searchResponse = await axios.get('http://localhost:9090/friendship/search', config);
 
-    // Update the search results with the response data
-    // Filter out the friends and the current user from the search results
     this.searchResults = searchResponse.data.filter(user => !this.friends.includes(user) && user !== this.username);
   } catch (error) {
     console.error(error);
   }
 },
     searchGroups() {
-        // Implement your search for groups logic here and a list to shown? 
+
     console.log('Searching for groups:', this.searchTerm);
     },
     async sendFriendRequest(username) {
   try {
-    const token = localStorage.getItem('token'); // replace this with your token retrieval logic
+    const token = localStorage.getItem('token'); 
     const config = {
       headers: { Authorization: `Bearer ${token}` },
       params: { otherUsername: username },
@@ -133,9 +131,8 @@ export default {
     const response = await axios.post('http://localhost:9090/friendship/add', null, config);
     this.message = response.data;
 
-    // Remove the user from the search results
     this.searchResults = this.searchResults.filter(user => user !== username);
-    // Add the user to the friendRequests list
+
     this.friendRequests.push(username);
   } catch (error) {
     this.message = error.response ? error.response.data : 'An error occurred';
@@ -143,7 +140,7 @@ export default {
 },
 async acceptFriendRequest(username) {
     try {
-      const token = localStorage.getItem('token'); // replace this with your token retrieval logic
+      const token = localStorage.getItem('token'); 
       const config = {
         headers: { Authorization: `Bearer ${token}` },
         params: { otherUsername: username },
@@ -157,7 +154,7 @@ async acceptFriendRequest(username) {
   },
   async declineFriendRequest(username) {
   try {
-    const token = localStorage.getItem('token'); // replace this with your token retrieval logic
+    const token = localStorage.getItem('token');
     const config = {
       headers: { Authorization: `Bearer ${token}` },
       params: { otherUsername: username },
@@ -202,12 +199,12 @@ async acceptFriendRequest(username) {
 .modal-content {
   position: relative;
   padding: 20px;
-  background-color: #4a90e2; /* Blå bakgrund */
-  color: white; /* Vit text */
-  border-radius: 8px; /* Rundade hörn */
-  width: 50%; /* Halva bredden av föräldern */
-  max-width: 500px; /* Maximal bredd */
-  box-sizing: border-box; /* Inkludera padding och border i elementets totala bredd och höjd */
+  background-color: #4a90e2; 
+  color: white;
+  border-radius: 8px; 
+  width: 50%;
+  max-width: 500px; 
+  box-sizing: border-box;
 }
 
 .input-field {
